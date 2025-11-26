@@ -1,0 +1,56 @@
+theatre:
+  name: "Live Arts"
+  address: "123 E Water St, Charlottesville, VA 22902"
+  # Coordinates are essential for Weather and Places APIs
+  location:
+    latitude: 38.03000478804457
+    longitude: -78.48127318954599
+  radius_meters: 400 # Search radius for nearby businesses (e.g., 400m = 0.25 mile = 5-minute walk)
+  whitelist_radius_meters: 3000 # Driving distance for Sponsors/Whitelisted places
+
+branding:
+  logo_url: "https://livearts.org/wp-content/themes/livearts/images/live-arts-logo.svg" # Optional
+  primary_color: "#dc5e45"   # The Theatre's specific Orange
+  secondary_color: "#F0F0F0" # Background Gray
+  headline_color: "#AC3500"  # Darker Orange/Rust for readable text
+  font_family: "Arial, sans-serif"
+
+details:
+  accessibility_note: "An elevator is available."
+  contact_phone: "(555) 123-4567"
+  contact_email: "boxoffice@livearts.org"
+
+
+settings:
+  units: "imperial" # Options: "imperial" (°F) or "metric" (°C)
+
+concessions:
+  description: "Beer, wine, and snacks available."
+  sponsor:
+    name: "Local Brewery"
+    url: "https://example.com"
+
+# NEW: Business Control Lists
+# Matches are case-insensitive partials (e.g., "McDonald" matches "McDonald's")
+lists:
+  whitelist:
+    # - "Luigi's Trattoria" # Will always appear at the top
+    # - "The Friendly Pub"
+    - "South Street Brewery"
+  blacklist:
+    # - "Subway"            # Will never appear
+    # - "Noisy Bar"
+    - "Chaps Ice Cream"
+
+# ✅ CORRECT VERSION
+business_categories:
+  pre_show:
+    - name: "Dinner"
+      keyword: "restaurant"
+    - name: "Quick Bites"
+      keyword: "cafe"
+  post_show:
+    - name: "Sweet Treats"
+      keyword: "dessert"
+    - name: "Late Night Drinks"
+      keyword: "bar"

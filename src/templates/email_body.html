@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ context.show_info.show_title }}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: {{ context.config.branding.secondary_color }};">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+        <tr>
+            <td align="center" style="padding: 20px 0 30px 0;">
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    
+                    <tr>
+                        <td align="center" bgcolor="{{ context.config.branding.primary_color }}" style="padding: 30px 20px;">
+                            
+                            {% if context.config.branding.logo_url %}
+                                <img src="{{ context.config.branding.logo_url }}" alt="{{ context.config.theatre.name }}" width="200" style="display: block; border: 0; margin-bottom: 20px; max-width: 100%; height: auto;">
+                            {% endif %}
+                            
+                            <h1 style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; margin: 0; font-size: 28px;">
+                                {{ context.show_info.show_title }}
+                            </h1>
+                            <p style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; font-size: 16px; margin: 10px 0 0 0;">
+                                **Your Performance:** {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 40px 30px 20px 30px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td width="40%" valign="top" style="padding-bottom: 20px;">
+                                        <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0; margin-bottom: 15px;">
+                                            Weather
+                                        </h3>
+                                        
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 15px;">
+                                            <tr>
+                                                <td width="80">
+                                                    {% set bg_color = '#E0F7FA' if context.weather.arrival.is_day else '#1A237E' %}
+                                                    <div style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
+                                                        {{ context.weather.arrival.icon }}
+                                                    </div>
+                                                </td>
+                                                <td style="padding-left: 15px; vertical-align: middle;">
+                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 12px; text-transform: uppercase; color: #777777; font-weight: bold;">
+                                                        Arrival
+                                                    </div>
+                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 32px; color: #222222; font-weight: bold; line-height: 1;">
+                                                        {{ context.weather.arrival.temp }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td width="80">
+                                                    {% set bg_color = '#E0F7FA' if context.weather.departure.is_day else '#1A237E' %}
+                                                    <div style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
+                                                        {{ context.weather.departure.icon }}
+                                                    </div>
+                                                </td>
+                                                <td style="padding-left: 15px; vertical-align: middle;">
+                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 12px; text-transform: uppercase; color: #777777; font-weight: bold;">
+                                                        Departure
+                                                    </div>
+                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 32px; color: #222222; font-weight: bold; line-height: 1;">
+                                                        {{ context.weather.departure.temp }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    
+                                    <td width="60%" valign="top" style="padding-bottom: 20px; padding-left: 20px;">
+                                        <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
+                                            Address & Timing
+                                        </h3>
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 16px; line-height: 24px; margin: 0;">
+                                            <strong>Address:</strong> {{ context.config.theatre.name }}, {{ context.config.theatre.address }}<br/><br/>
+                                            
+                                            {% if context.show_info.parking_notes %}
+                                                <strong>Parking:</strong> {{ context.show_info.parking_notes }}<br/><br/>
+                                            {% endif %}
+                                            
+                                            <strong>Doors Open:</strong> {{ context.show_info.doors_open_time | simple_time }}<br/> 
+                                            <strong>Start Time:</strong> {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}<br/>
+                                            <strong>End Time:</strong> {{ context.show_info.end_time | simple_time }} ({{ context.show_info.end_time | runtime(context.show_info.start_time) }})<br/>
+                                            
+                                            {% if context.show_info.intermission_description %}
+                                                <strong>Intermission:</strong> {{ context.show_info.intermission_description }}
+                                            {% endif %}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 20px;">
+                                <tr>
+                                    <td valign="top">
+                                        <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
+                                            Good to Know
+                                        </h3>
+                                        
+                                        {% if context.show_info.ticket_instructions %}
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 15px; line-height: 22px; margin: 0 0 10px 0;">
+                                            🎟 <strong>Tickets:</strong> {{ context.show_info.ticket_instructions }}
+                                        </p>
+                                        {% endif %}
+                                        
+                                        {% if context.config.concessions.description %}
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 15px; line-height: 22px; margin: 0 0 10px 0;">
+                                            🍿 <strong>Concessions:</strong> {{ context.config.concessions.description }}
+                                            {% if context.config.concessions.sponsor %}
+                                                <br><span style="font-size: 13px; color: #666666;">(Proudly sponsored by <a href="{{ context.config.concessions.sponsor.url }}" style="color: {{ context.config.branding.primary_color }}; text-decoration: none;">{{ context.config.concessions.sponsor.name }}</a>)</span>
+                                            {% endif %}
+                                        </p>
+                                        {% endif %}
+
+                                        {% if context.config.details.accessibility_note %}
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 15px; line-height: 22px; margin: 0 0 10px 0;">
+                                            ♿ <strong>Accessibility:</strong> {{ context.config.details.accessibility_note }}
+                                        </p>
+                                        {% endif %}
+                                        
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 15px; line-height: 22px; margin: 0;">
+                                            {% if context.show_info.house_rules %}
+                                                ℹ️ <strong>Notes:</strong> {{ context.show_info.house_rules }} 
+                                            {% endif %}
+                                            Questions? Call <strong>{{ context.config.details.contact_phone }}</strong>.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 20px 30px 40px 30px;">
+                            <h2 style="font-family: {{ context.config.branding.font_family }}; color: #333333; margin-top: 0; margin-bottom: 20px; font-size: 22px; text-align: center;">
+                                Dining & Drinks
+                            </h2>
+
+                            {% for section, title in [('pre_show', 'Pre-Show Options'), ('post_show', 'Post-Show Options')] %}
+                                {% if context.places[section] %}
+                                    <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 18px; margin-top: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 5px;">
+                                        {{ title }}
+                                    </h3>
+                                    {% for category_name, places_list in context.places[section].items() %}
+                                        {% if places_list %}
+                                            <p style="font-family: {{ context.config.branding.font_family }}; font-weight: bold; margin-bottom: 5px; font-size: 16px;">
+                                                — {{ category_name }}
+                                            </p>
+                                            <ul style="font-family: {{ context.config.branding.font_family }}; font-size: 14px; margin-top: 0; padding-left: 20px; list-style-type: none;">
+                                                {% for place in places_list %}
+                                                    <li style="margin-bottom: 12px;">
+                                                        <strong>{{ place.name }}</strong> ({{ place.rating }}★)
+                                                        
+                                                        {% if place.is_promoted %}
+                                                            <span style="font-size: 10px; background-color: {{ context.config.branding.primary_color }}; color: white; padding: 2px 4px; border-radius: 4px; margin-left: 3px;">SPONSOR</span>
+                                                        {% endif %}
+                                                        
+                                                        <span style="font-size: 11px; background-color: #f0f0f0; color: #555; padding: 2px 6px; border-radius: 4px; margin-left: 5px; white-space: nowrap;">
+                                                            ~{{ (place.distance_m / 80) | round | int }} min walk
+                                                        </span>
+                                                        
+                                                        <br><span style="color: #666666; font-size: 13px;">{{ place.address }}</span>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td bgcolor="#efefef" style="padding: 15px 30px; font-family: {{ context.config.branding.font_family }}; font-size: 12px; color: #777777; text-align: center;">
+                            Operational reminder from {{ context.config.theatre.name }}.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
