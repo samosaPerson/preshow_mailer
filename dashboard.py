@@ -65,6 +65,8 @@ def build_show_data_from_inputs(show_title, start_time, end_time, doors_open_tim
 def build_config_from_inputs(config_base, theatre_name, theatre_address, phone, email,
                              accessibility_note, logo_url, primary_color, secondary_color,
                              headline_color, latitude, longitude, radius, whitelist_radius,
+                             concessions_description, sponsor_name, sponsor_url,
+                             whitelist_csv, blacklist_csv,
                              primary_hex=None, secondary_hex=None, headline_hex=None):
     config = dict(config_base or config_defaults)
     theatre = config.setdefault("theatre", {})
@@ -86,6 +88,21 @@ def build_config_from_inputs(config_base, theatre_name, theatre_address, phone, 
     details["contact_phone"] = phone
     details["contact_email"] = email
     details["accessibility_note"] = accessibility_note
+
+    concessions = config.setdefault("concessions", {})
+    concessions["description"] = concessions_description
+    concessions.setdefault("sponsor", {})
+    concessions["sponsor"]["name"] = sponsor_name
+    concessions["sponsor"]["url"] = sponsor_url
+
+    def csv_to_list(value):
+        if not value:
+            return []
+        return [item.strip() for item in value.split(",") if item.strip()]
+
+    lists_cfg = config.setdefault("lists", {})
+    lists_cfg["whitelist"] = csv_to_list(whitelist_csv)
+    lists_cfg["blacklist"] = csv_to_list(blacklist_csv)
     return config
 
 
@@ -217,9 +234,9 @@ hero = dbc.Row([
                className="text-white-50 mb-0")
     ])
 ], className="p-4 rounded-3", style={
-    "background": "linear-gradient(120deg, #251a36 0%, #2e2445 50%, #41305b 100%)",
-    "boxShadow": "0 10px 30px rgba(0,0,0,0.25)",
-    "border": "1px solid #2c2b44"
+    "background": "linear-gradient(120deg, #0f1f3f 0%, #11264d 50%, #0c1934 100%)",
+    "boxShadow": "0 14px 40px rgba(6,12,26,0.35)",
+    "border": "1px solid #1e2e4d"
 })
 
 
@@ -247,25 +264,35 @@ def editor_tab():
                 dbc.InputGroupText("Pick"),
                 dcc.Input(id="primary-color", type="color", value=config_defaults["branding"].get("primary_color", "#e86a4f"), className="form-control form-control-color"),
                 dbc.InputGroupText("Hex"),
-                dcc.Input(id="primary-color-hex", type="text", value=config_defaults["branding"].get("primary_color", "#e86a4f"), className="form-control")
+                dcc.Input(id="primary-color-hex", type="text", value=config_defaults["branding"].get("primary_color", "#e86a4f"), className="form-control hex-input")
             ], className="mb-2"),
             dbc.Label("Secondary Color", html_for="secondary-color"),
             dbc.InputGroup([
                 dbc.InputGroupText("Pick"),
                 dcc.Input(id="secondary-color", type="color", value=config_defaults["branding"].get("secondary_color", "#17162a"), className="form-control form-control-color"),
                 dbc.InputGroupText("Hex"),
-                dcc.Input(id="secondary-color-hex", type="text", value=config_defaults["branding"].get("secondary_color", "#17162a"), className="form-control")
+                dcc.Input(id="secondary-color-hex", type="text", value=config_defaults["branding"].get("secondary_color", "#17162a"), className="form-control hex-input")
             ], className="mb-2"),
-            dbc.Label("Headline Color", html_for="headline-color"),
-            dbc.InputGroup([
-                dbc.InputGroupText("Pick"),
-                dcc.Input(id="headline-color", type="color", value=config_defaults["branding"].get("headline_color", "#ffffff"), className="form-control form-control-color"),
-                dbc.InputGroupText("Hex"),
-                dcc.Input(id="headline-color-hex", type="text", value=config_defaults["branding"].get("headline_color", "#ffffff"), className="form-control")
-            ], className="mb-2"),
-            dbc.Label("Latitude", html_for="latitude"),
-            dcc.Input(id="latitude", type="number", value=config_defaults["theatre"]["location"].get("latitude", ""), className="form-control mb-2"),
-            dbc.Label("Longitude", html_for="longitude"),
+    dbc.Label("Headline Color", html_for="headline-color"),
+    dbc.InputGroup([
+        dbc.InputGroupText("Pick"),
+        dcc.Input(id="headline-color", type="color", value=config_defaults["branding"].get("headline_color", "#ffffff"), className="form-control form-control-color"),
+        dbc.InputGroupText("Hex"),
+        dcc.Input(id="headline-color-hex", type="text", value=config_defaults["branding"].get("headline_color", "#ffffff"), className="form-control hex-input")
+    ], className="mb-2"),
+    dbc.Label("Concessions Description", html_for="concession-description"),
+    dcc.Textarea(id="concession-description", value=config_defaults.get("concessions", {}).get("description", ""), className="form-control mb-2"),
+    dbc.Label("Concession Sponsor Name", html_for="sponsor-name"),
+    dcc.Input(id="sponsor-name", type="text", value=config_defaults.get("concessions", {}).get("sponsor", {}).get("name", ""), className="form-control mb-2"),
+    dbc.Label("Concession Sponsor URL", html_for="sponsor-url"),
+    dcc.Input(id="sponsor-url", type="text", value=config_defaults.get("concessions", {}).get("sponsor", {}).get("url", ""), className="form-control mb-2"),
+    dbc.Label("Whitelist (comma separated)", html_for="whitelist"),
+    dcc.Input(id="whitelist", type="text", value=",".join(config_defaults.get("lists", {}).get("whitelist", []) or []), className="form-control mb-2"),
+    dbc.Label("Blacklist (comma separated)", html_for="blacklist"),
+    dcc.Input(id="blacklist", type="text", value=",".join(config_defaults.get("lists", {}).get("blacklist", []) or []), className="form-control mb-2"),
+    dbc.Label("Latitude", html_for="latitude"),
+    dcc.Input(id="latitude", type="number", value=config_defaults["theatre"]["location"].get("latitude", ""), className="form-control mb-2"),
+    dbc.Label("Longitude", html_for="longitude"),
             dcc.Input(id="longitude", type="number", value=config_defaults["theatre"]["location"].get("longitude", ""), className="form-control mb-2"),
             dbc.Label("Radius (meters)", html_for="radius"),
             dcc.Input(id="radius", type="number", value=config_defaults["theatre"].get("radius_meters", ""), className="form-control mb-2"),
@@ -352,15 +379,23 @@ def editor_tab():
 
     show_section = dbc.Card([
         dbc.CardHeader(
-            dbc.Button("Show Details", id="toggle-show", color="link", className="stretched-link text-decoration-none text-start text-white fw-semibold")
-        , className="bg-transparent border-0"),
+            html.Div([
+                html.Span("▸", id="show-chevron", className="me-2 chevron-icon rotate-90"),
+                html.Span("Show Details", className="fw-semibold")
+            ], id="toggle-show", n_clicks=0, className="d-flex align-items-center text-white text-decoration-none toggle-row"),
+            className="bg-transparent border-0"
+        ),
         dbc.Collapse(show_form, id="show-collapse", is_open=True)
     ], className="mb-3 border-0")
 
     theatre_section = dbc.Card([
         dbc.CardHeader(
-            dbc.Button("Theatre Details", id="toggle-theatre", color="link", className="stretched-link text-decoration-none text-start text-white fw-semibold")
-        , className="bg-transparent border-0"),
+            html.Div([
+                html.Span("▸", id="theatre-chevron", className="me-2 chevron-icon rotate-90"),
+                html.Span("Theatre Details", className="fw-semibold")
+            ], id="toggle-theatre", n_clicks=0, className="d-flex align-items-center text-white text-decoration-none toggle-row"),
+            className="bg-transparent border-0"
+        ),
         dbc.Collapse(theatre_form, id="theatre-collapse", is_open=True)
     ], className="mb-3 border-0")
 
@@ -455,6 +490,7 @@ def toggle_schedule_modal(open_clicks, close_clicks, is_open):
 
 @app.callback(
     Output("show-collapse", "is_open"),
+    Output("show-chevron", "className"),
     Input("toggle-show", "n_clicks"),
     State("show-collapse", "is_open"),
     prevent_initial_call=True
@@ -462,11 +498,14 @@ def toggle_schedule_modal(open_clicks, close_clicks, is_open):
 def toggle_show_section(n, is_open):
     if not n:
         raise PreventUpdate
-    return not is_open
+    new_state = not is_open
+    chevron_class = "me-2 chevron-icon rotate-90" if new_state else "me-2 chevron-icon"
+    return new_state, chevron_class
 
 
 @app.callback(
     Output("theatre-collapse", "is_open"),
+    Output("theatre-chevron", "className"),
     Input("toggle-theatre", "n_clicks"),
     State("theatre-collapse", "is_open"),
     prevent_initial_call=True
@@ -474,7 +513,9 @@ def toggle_show_section(n, is_open):
 def toggle_theatre_section(n, is_open):
     if not n:
         raise PreventUpdate
-    return not is_open
+    new_state = not is_open
+    chevron_class = "me-2 chevron-icon rotate-90" if new_state else "me-2 chevron-icon"
+    return new_state, chevron_class
 
 
 @app.callback(
@@ -490,6 +531,11 @@ def toggle_theatre_section(n, is_open):
     Output("secondary-color-hex", "value"),
     Output("headline-color", "value"),
     Output("headline-color-hex", "value"),
+    Output("concession-description", "value"),
+    Output("sponsor-name", "value"),
+    Output("sponsor-url", "value"),
+    Output("whitelist", "value"),
+    Output("blacklist", "value"),
     Output("latitude", "value"),
     Output("longitude", "value"),
     Output("radius", "value"),
@@ -509,6 +555,9 @@ def load_config_upload(contents, filename):
         theatre = data.get("theatre", {})
         branding = data.get("branding", {})
         details = data.get("details", {})
+        concessions = data.get("concessions", {})
+        sponsor = concessions.get("sponsor", {})
+        lists_cfg = data.get("lists", {})
         status = dbc.Alert(f"Loaded config from {filename}.", color="success", dismissable=True)
         return (
             theatre.get("name", ""),
@@ -523,6 +572,11 @@ def load_config_upload(contents, filename):
             branding.get("secondary_color", ""),
             branding.get("headline_color", ""),
             branding.get("headline_color", ""),
+            concessions.get("description", ""),
+            sponsor.get("name", ""),
+            sponsor.get("url", ""),
+            ",".join(lists_cfg.get("whitelist", []) or []),
+            ",".join(lists_cfg.get("blacklist", []) or []),
             theatre.get("location", {}).get("latitude", ""),
             theatre.get("location", {}).get("longitude", ""),
             theatre.get("radius_meters", ""),
@@ -532,7 +586,7 @@ def load_config_upload(contents, filename):
         )
     except Exception as exc:  # pragma: no cover
         status = dbc.Alert(f"Failed to load config: {exc}", color="danger", dismissable=True)
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, status
+        return (dash.no_update,) * 22 + (status,)
 
 
 @app.callback(
@@ -604,6 +658,11 @@ def load_show_upload(contents, filename):
     State("secondary-color-hex", "value"),
     State("headline-color", "value"),
     State("headline-color-hex", "value"),
+    State("concession-description", "value"),
+    State("sponsor-name", "value"),
+    State("sponsor-url", "value"),
+    State("whitelist", "value"),
+    State("blacklist", "value"),
     State("latitude", "value"),
     State("longitude", "value"),
     State("radius", "value"),
@@ -613,7 +672,8 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
                      end_time, doors_open, intermission, tz_abbrev, audience_rating, content_warnings,
                      theatre_name, theatre_address, theatre_phone, theatre_email, theatre_accessibility,
                      logo_url, primary_color, primary_color_hex, secondary_color, secondary_color_hex,
-                     headline_color, headline_color_hex, latitude, longitude, radius, whitelist_radius):
+                     headline_color, headline_color_hex, concession_description, sponsor_name, sponsor_url,
+                     whitelist_csv, blacklist_csv, latitude, longitude, radius, whitelist_radius):
     ctx = dash.callback_context
     triggered = ctx.triggered_id
     if not triggered and not cached_html:
@@ -630,6 +690,7 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
                 theatre_accessibility, logo_url, primary_color, secondary_color,
                 headline_color, latitude, longitude, radius, whitelist_radius,
+                concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
             html_body = generate_email_html(show_data, config)
@@ -680,6 +741,11 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
     State("secondary-color-hex", "value"),
     State("headline-color", "value"),
     State("headline-color-hex", "value"),
+    State("concession-description", "value"),
+    State("sponsor-name", "value"),
+    State("sponsor-url", "value"),
+    State("whitelist", "value"),
+    State("blacklist", "value"),
     State("latitude", "value"),
     State("longitude", "value"),
     State("radius", "value"),
@@ -690,7 +756,8 @@ def export_html(n_clicks, cached_html, config_data, show_title, start_time, end_
                 intermission, tz_abbrev, audience_rating, content_warnings,
                 theatre_name, theatre_address, theatre_phone, theatre_email, theatre_accessibility,
                 logo_url, primary_color, primary_color_hex, secondary_color, secondary_color_hex,
-                headline_color, headline_color_hex, latitude, longitude, radius, whitelist_radius):
+                headline_color, headline_color_hex, concession_description, sponsor_name, sponsor_url,
+                whitelist_csv, blacklist_csv, latitude, longitude, radius, whitelist_radius):
     if not n_clicks:
         raise PreventUpdate
 
@@ -705,6 +772,7 @@ def export_html(n_clicks, cached_html, config_data, show_title, start_time, end_
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
                 theatre_accessibility, logo_url, primary_color, secondary_color,
                 headline_color, latitude, longitude, radius, whitelist_radius,
+                concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
             html_body = generate_email_html(show_data, config)
@@ -742,6 +810,11 @@ def export_html(n_clicks, cached_html, config_data, show_title, start_time, end_
     State("secondary-color-hex", "value"),
     State("headline-color", "value"),
     State("headline-color-hex", "value"),
+    State("concession-description", "value"),
+    State("sponsor-name", "value"),
+    State("sponsor-url", "value"),
+    State("whitelist", "value"),
+    State("blacklist", "value"),
     State("latitude", "value"),
     State("longitude", "value"),
     State("radius", "value"),
@@ -752,7 +825,8 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
              intermission, tz_abbrev, audience_rating, content_warnings, theatre_name, theatre_address,
              theatre_phone, theatre_email, theatre_accessibility, logo_url, primary_color,
              primary_color_hex, secondary_color, secondary_color_hex, headline_color,
-             headline_color_hex, latitude, longitude, radius, whitelist_radius):
+             headline_color_hex, concession_description, sponsor_name, sponsor_url,
+             whitelist_csv, blacklist_csv, latitude, longitude, radius, whitelist_radius):
     if not n_clicks:
         raise PreventUpdate
     if not MAILCHIMP_READY:
@@ -768,6 +842,7 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
                 theatre_accessibility, logo_url, primary_color, secondary_color,
                 headline_color, latitude, longitude, radius, whitelist_radius,
+                concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
             html_body = generate_email_html(show_data, config)
@@ -776,6 +851,7 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
                 theatre_accessibility, logo_url, primary_color, secondary_color,
                 headline_color, latitude, longitude, radius, whitelist_radius,
+                concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
         subject = f"Upcoming Performance: {show_title}"
@@ -820,6 +896,11 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
     State("secondary-color-hex", "value"),
     State("headline-color", "value"),
     State("headline-color-hex", "value"),
+    State("concession-description", "value"),
+    State("sponsor-name", "value"),
+    State("sponsor-url", "value"),
+    State("whitelist", "value"),
+    State("blacklist", "value"),
     State("latitude", "value"),
     State("longitude", "value"),
     State("radius", "value"),
@@ -830,7 +911,8 @@ def schedule_campaign(n_clicks, schedule_time, cached_html, config_data, show_ti
                       doors_open, intermission, tz_abbrev, audience_rating, content_warnings,
                       theatre_name, theatre_address, theatre_phone, theatre_email, theatre_accessibility,
                       logo_url, primary_color, primary_color_hex, secondary_color, secondary_color_hex,
-                      headline_color, headline_color_hex, latitude, longitude, radius, whitelist_radius):
+                      headline_color, headline_color_hex, concession_description, sponsor_name, sponsor_url,
+                      whitelist_csv, blacklist_csv, latitude, longitude, radius, whitelist_radius):
     if not n_clicks:
         raise PreventUpdate
     if not MAILCHIMP_READY:
@@ -845,6 +927,7 @@ def schedule_campaign(n_clicks, schedule_time, cached_html, config_data, show_ti
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
                 theatre_accessibility, logo_url, primary_color, secondary_color,
                 headline_color, latitude, longitude, radius, whitelist_radius,
+                concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
             html_body = generate_email_html(show_data, config)
@@ -853,6 +936,7 @@ def schedule_campaign(n_clicks, schedule_time, cached_html, config_data, show_ti
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
                 theatre_accessibility, logo_url, primary_color, secondary_color,
                 headline_color, latitude, longitude, radius, whitelist_radius,
+                concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
         subject = f"Upcoming Performance: {show_title}"

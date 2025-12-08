@@ -1,50 +1,82 @@
 :root {
-    --bg: #0e0c18;
-    --panel: #1f1d34;
-    --panel-alt: #2c2a45;
-    --text: #f4f6ff;
-    --muted: #c7c7d7;
-    --accent: #ff8c5f;
-    --accent-dark: #fb7547;
-    --accent-darker: #d65f39;
-    --border: #403f60;
+    --bg: #0b1224;
+    --panel: #0f1b35;
+    --panel-alt: #152442;
+    --text: #e6ecff;
+    --muted: #aab6d6;
+    --accent: #1f5eff;
+    --accent-dark: #1749c9;
+    --accent-darker: #123a9f;
+    --border: #1e2e4d;
+    --surface: #0d1730;
+    --shadow: 0 16px 45px rgba(6, 12, 26, 0.35);
+    --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body, .body-bg {
-    background: radial-gradient(circle at 20% 20%, #29234a 0%, #18162b 45%, #0e0c18 100%);
+    background: radial-gradient(circle at 20% 20%, #132143 0%, #0b1224 40%, #070e1d 100%);
     color: var(--text);
+    font-family: var(--font-body);
 }
 
 .card, .bg-dark {
     background-color: var(--panel) !important;
     border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+}
+
+.chevron-icon {
+    font-size: 36px;
+    display: inline-block;
+    transition: transform 0.12s ease;
+    line-height: 1;
+}
+.rotate-90 {
+    transform: rotate(90deg);
+}
+
+.toggle-row {
+    cursor: pointer;
 }
 
 .card-body { color: var(--text); }
 
 .form-control, .form-control:focus, .dash-textarea, textarea {
-    background-color: #f7f8ff;
-    color: #1f1d34;
-    border: 1px solid #cfd2e6;
+    background-color: #0f1b35;
+    color: #e6ecff;
+    border: 1px solid #24365a;
     box-shadow: none;
+    border-radius: 8px;
 }
 
 .form-control:focus {
     border-color: var(--accent);
-    box-shadow: none;
+    box-shadow: 0 0 0 1px rgba(31,94,255,0.35);
 }
 
 .form-control-color {
     padding: 0.2rem 0.4rem;
     height: 2.4rem;
+    background: #0f1b35;
+    border: 1px solid #24365a;
+    border-radius: 8px;
+}
+.hex-input {
+    background: #11264d !important;
+    color: #f5f7ff !important;
+    border-color: #2f4a7a !important;
 }
 
 .upload-box {
-    background-color: #1f1e33;
-    border: 1px dashed var(--border);
+    background-color: var(--panel-alt);
+    border: 1px dashed #2b3f67;
     color: var(--muted);
     text-align: center;
     cursor: pointer;
+    border-radius: 10px;
 }
 
 .action-btn, .btn {
@@ -52,44 +84,46 @@ body, .body-bg {
 }
 
 .action-btn {
-    background: linear-gradient(135deg, #ffd4c2, #ff946a);
-    border: 1px solid rgba(0,0,0,0.08);
-    color: #2b1c18;
+    background: linear-gradient(135deg, #2a62ff, #1f5eff);
+    border: 1px solid #1b4bcc;
+    color: #eaf0ff;
+    border-radius: 8px;
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #ffc4ae, #ff8253);
-    color: #2b1c18;
+    background: linear-gradient(135deg, #2554d8, #1b4bcc);
+    color: #eaf0ff;
 }
 
 .action-btn:active, .action-btn:focus {
-    background: #fb7547;
-    color: #2b1c18;
+    background: #1742ad;
+    color: #eaf0ff;
 }
 
 .secondary-btn {
-    background: #e6e8f5;
-    color: #1f1d34;
-    border: 1px solid #d0d2e5;
+    background: #122241;
+    color: #d7e1ff;
+    border: 1px solid #24365a;
+    border-radius: 8px;
 }
 
 .secondary-btn:hover {
-    background: #d8daed;
+    background: #162a4f;
 }
 
 .toggle-group label {
     display: inline-flex;
     align-items: center;
     margin-right: 8px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--panel-alt);
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #24365a;
+    background: #0f1b35;
     color: var(--muted);
     cursor: pointer;
     user-select: none;
-    gap: 6px;
-    transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+    gap: 8px;
+    transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 
 .toggle-group input {
@@ -97,7 +131,7 @@ body, .body-bg {
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    border: 2px solid var(--border);
+    border: 2px solid #2d4066;
     background: transparent;
     position: relative;
     accent-color: var(--accent);
@@ -109,13 +143,34 @@ body, .body-bg {
 }
 
 .toggle-group label:has(input:checked) {
-    background: #2c2b44;
-    color: #fff;
+    background: #173263;
+    color: #eaf0ff;
     border-color: var(--accent);
 }
 
 .toggle-group label:hover {
-    background: #2a2941;
+    background: #122852;
+}
+
+/* Tabs */
+.nav-tabs {
+    border-bottom: 1px solid #1b2946 !important;
+    box-shadow: none !important;
+    background: #0c162d;
+    border-radius: 10px 10px 0 0;
+}
+.nav-tabs .nav-link {
+    border: 0 !important;
+    color: var(--muted) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.nav-tabs .nav-link.active {
+    color: #eaf0ff !important;
+    background: #0f1d3a !important;
+    border: 0 !important;
+    border-bottom: 2px solid var(--accent) !important;
+    box-shadow: none !important;
 }
 
 .list-group-item {
@@ -123,9 +178,15 @@ body, .body-bg {
     color: var(--text);
     border: 1px solid var(--border);
     cursor: pointer;
+    border-radius: 8px;
 }
 
 .list-group-item-action:hover {
-    background-color: #24233a;
+    background-color: #152442;
     color: #fff;
+}
+.hex-input {
+    background: #0f1b35 !important;
+    color: #f7f9ff !important;
+    border-color: #2f4a7a !important;
 }
