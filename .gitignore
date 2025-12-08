@@ -4,6 +4,12 @@ __pycache__/
 .env
 /venv/
 .DS_Store
+keys.py
+
+# Python build and metadata
+*.egg-info/
+*.dist-info/
+build/
 
 # Output files
 /output/

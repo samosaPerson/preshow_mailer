@@ -18,7 +18,12 @@ branding:
 details:
   accessibility_note: "An elevator is available."
   contact_phone: "(555) 123-4567"
-  contact_email: "boxoffice@livearts.org"
+  contact_email: "alirezanamazi00@gmail.com"
+
+# STATIC FIELDS MOVED FROM show_info.json
+  house_rules: "Late seating is only permitted during applause breaks. Please silence all cell phones."
+  parking_notes: "Free validated parking is available in the garage across the street from the theatre."
+  ticket_instructions: "No printing needed! Simply show up to the box office on the ground floor."
 
 
 settings:

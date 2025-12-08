@@ -2,6 +2,7 @@
 import requests
 from datetime import datetime
 from src.utils.geo import calculate_distance
+from urllib.parse import quote_plus
 
 SEARCH_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json"
@@ -41,7 +42,11 @@ def get_nearby_places(latitude, longitude, radius_meters, categories_list, check
                 # Distance
                 dist = calculate_distance(latitude, longitude, place['lat'], place['lng'])
                 place['distance_m'] = dist
-                
+
+                # Uses Google Maps Universal Link with Place ID for accuracy
+                query = quote_plus(f"{place['name']}, {place['address']}")
+                place['map_url'] = f"https://www.google.com/maps/search/?api=1&query={query}&query_place_id={place['place_id']}"
+
                 # Radius Filter
                 if is_whitelisted:
                     if dist > whitelist_radius: continue

@@ -6,6 +6,6 @@
   "intermission_description": "20-minute intermission.",
   "parking_notes": "Free validated parking is available in the garage directly across the street from the theatre.",
   "timezone_abbreviation": "EST",
-  "ticket_instructions": "No printing needed! Simply show to the box office to the right of the front door.",
-  "house_rules": "Please silence all cell phones. Leave anytime you need. Photography and recording are prohibited."
+  "audience_rating": "PG-13 (Suggestive themes)",
+  "content_warnings": "Loud music, strobe lighting, and theatrical haze effects."
 }

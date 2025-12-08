@@ -1,0 +1,131 @@
+:root {
+    --bg: #0e0c18;
+    --panel: #1f1d34;
+    --panel-alt: #2c2a45;
+    --text: #f4f6ff;
+    --muted: #c7c7d7;
+    --accent: #ff8c5f;
+    --accent-dark: #fb7547;
+    --accent-darker: #d65f39;
+    --border: #403f60;
+}
+
+body, .body-bg {
+    background: radial-gradient(circle at 20% 20%, #29234a 0%, #18162b 45%, #0e0c18 100%);
+    color: var(--text);
+}
+
+.card, .bg-dark {
+    background-color: var(--panel) !important;
+    border: 1px solid var(--border);
+}
+
+.card-body { color: var(--text); }
+
+.form-control, .form-control:focus, .dash-textarea, textarea {
+    background-color: #f7f8ff;
+    color: #1f1d34;
+    border: 1px solid #cfd2e6;
+    box-shadow: none;
+}
+
+.form-control:focus {
+    border-color: var(--accent);
+    box-shadow: none;
+}
+
+.form-control-color {
+    padding: 0.2rem 0.4rem;
+    height: 2.4rem;
+}
+
+.upload-box {
+    background-color: #1f1e33;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    text-align: center;
+    cursor: pointer;
+}
+
+.action-btn, .btn {
+    box-shadow: none !important;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, #ffd4c2, #ff946a);
+    border: 1px solid rgba(0,0,0,0.08);
+    color: #2b1c18;
+}
+
+.action-btn:hover {
+    background: linear-gradient(135deg, #ffc4ae, #ff8253);
+    color: #2b1c18;
+}
+
+.action-btn:active, .action-btn:focus {
+    background: #fb7547;
+    color: #2b1c18;
+}
+
+.secondary-btn {
+    background: #e6e8f5;
+    color: #1f1d34;
+    border: 1px solid #d0d2e5;
+}
+
+.secondary-btn:hover {
+    background: #d8daed;
+}
+
+.toggle-group label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel-alt);
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+    gap: 6px;
+    transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+}
+
+.toggle-group input {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    position: relative;
+    accent-color: var(--accent);
+}
+
+.toggle-group input:checked {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+
+.toggle-group label:has(input:checked) {
+    background: #2c2b44;
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.toggle-group label:hover {
+    background: #2a2941;
+}
+
+.list-group-item {
+    background-color: var(--panel-alt);
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.list-group-item-action:hover {
+    background-color: #24233a;
+    color: #fff;
+}

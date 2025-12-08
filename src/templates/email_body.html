@@ -1,38 +1,109 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
     <title>{{ context.show_info.show_title }}</title>
+    <style type="text/css">
+        /* RESET STYLES */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+        
+        /* MOBILE STYLES */
+        @media screen and (max-width: 600px) {
+            .mobile-stack {
+                display: block !important;
+                width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                box-sizing: border-box !important;
+            }
+            .mobile-padding-bottom {
+                padding-bottom: 30px !important;
+            }
+            .mobile-center {
+                text-align: center !important;
+            }
+            .mobile-img-center {
+                margin: 0 auto !important;
+            }
+        }
+
+        /* DARK MODE STYLES */
+        @media (prefers-color-scheme: dark) {
+            body, .body-bg {
+                background-color: #121212 !important;
+            }
+            .container-bg {
+                background-color: #1E1E1E !important;
+                box-shadow: none !important;
+            }
+            /* Global Text Color Override */
+            h1, h2, h3, h4, p, li, div {
+                color: #E0E0E0 !important;
+            }
+            /* Exclude spans from global override so badges work, handle them separately if needed */
+            
+            .dark-mode-text-inverse {
+                color: #121212 !important;
+            }
+            /* Preserve branding colors where possible but dim them slightly if needed */
+            .branding-text {
+                color: {{ context.config.branding.primary_color }} !important;
+                filter: brightness(1.2);
+            }
+            /* Force specific backgrounds for bubbles to ensure contrast */
+            .weather-bubble {
+                filter: brightness(0.8);
+            }
+            .sponsor-badge {
+                color: #FFFFFF !important;
+            }
+            /* NEW: Walking Badge Dark Mode Fix */
+            .walking-badge {
+                background-color: #333333 !important; /* Dark Grey Background */
+                color: #FFFFFF !important; /* White Text */
+                border: 1px solid #444444;
+            }
+            /* Links in Dark Mode */
+            a {
+                color: #90CAF9 !important;
+            }
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: {{ context.config.branding.secondary_color }};">
+<body class="body-bg" style="margin: 0; padding: 0; background-color: {{ context.config.branding.secondary_color }};">
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
         <tr>
             <td align="center" style="padding: 20px 0 30px 0;">
-                <table border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                
+                <table class="container-bg" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
                     
                     <tr>
-                        <td align="center" bgcolor="{{ context.config.branding.primary_color }}" style="padding: 30px 20px;">
+                        <td align="center" bgcolor="{{ context.config.branding.primary_color }}" style="padding: 20px 20px;">
                             
                             {% if context.config.branding.logo_url %}
-                                <img src="{{ context.config.branding.logo_url }}" alt="{{ context.config.theatre.name }}" width="200" style="display: block; border: 0; margin-bottom: 20px; max-width: 100%; height: auto;">
+                                <img src="{{ context.config.branding.logo_url }}" alt="{{ context.config.theatre.name }}" width="150" style="display: block; border: 0; margin-bottom: 15px; max-width: 100%; height: auto;">
                             {% endif %}
                             
-                            <h1 style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; margin: 0; font-size: 28px;">
+                            <h1 style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; margin: 0; font-size: 26px; line-height: 1.2;">
                                 {{ context.show_info.show_title }}
                             </h1>
-                            <p style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; font-size: 16px; margin: 10px 0 0 0;">
-                                **Your Performance:** {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}
+                            <p class="dark-mode-text-inverse" style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; font-size: 15px; margin: 8px 0 0 0;">
+                                <strong>Your Performance:</strong> {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}
                             </p>
                         </td>
                     </tr>
 
                     <tr>
-                        <td style="padding: 40px 30px 20px 30px;">
+                        <td style="padding: 30px;">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td width="40%" valign="top" style="padding-bottom: 20px;">
-                                        <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0; margin-bottom: 15px;">
+                                    <td class="mobile-stack mobile-padding-bottom" width="40%" valign="top" style="padding-right: 15px;">
+                                        <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0; margin-bottom: 15px;">
                                             Weather
                                         </h3>
                                         
@@ -40,7 +111,7 @@
                                             <tr>
                                                 <td width="80">
                                                     {% set bg_color = '#E0F7FA' if context.weather.arrival.is_day else '#1A237E' %}
-                                                    <div style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
+                                                    <div class="weather-bubble" style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
                                                         {{ context.weather.arrival.icon }}
                                                     </div>
                                                 </td>
@@ -59,7 +130,7 @@
                                             <tr>
                                                 <td width="80">
                                                     {% set bg_color = '#E0F7FA' if context.weather.departure.is_day else '#1A237E' %}
-                                                    <div style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
+                                                    <div class="weather-bubble" style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
                                                         {{ context.weather.departure.icon }}
                                                     </div>
                                                 </td>
@@ -75,17 +146,17 @@
                                         </table>
                                     </td>
                                     
-                                    <td width="60%" valign="top" style="padding-bottom: 20px; padding-left: 20px;">
-                                        <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
+                                    <td class="mobile-stack" width="60%" valign="top" style="padding-left: 10px;">
+                                        <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
                                             Address & Timing
                                         </h3>
                                         <p style="font-family: {{ context.config.branding.font_family }}; font-size: 16px; line-height: 24px; margin: 0;">
                                             <strong>Address:</strong> {{ context.config.theatre.name }}, {{ context.config.theatre.address }}<br/><br/>
                                             
-                                            {% if context.show_info.parking_notes %}
-                                                <strong>Parking:</strong> {{ context.show_info.parking_notes }}<br/><br/>
+                                            {% if context.config.details.parking_notes %}
+                                                <strong>Parking:</strong> {{ context.config.details.parking_notes }}<br/><br/>
                                             {% endif %}
-                                            
+
                                             <strong>Doors Open:</strong> {{ context.show_info.doors_open_time | simple_time }}<br/> 
                                             <strong>Start Time:</strong> {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}<br/>
                                             <strong>End Time:</strong> {{ context.show_info.end_time | simple_time }} ({{ context.show_info.end_time | runtime(context.show_info.start_time) }})<br/>
@@ -97,17 +168,40 @@
                                     </td>
                                 </tr>
                             </table>
+                        </td>
+                    </tr>
 
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px; border-top: 1px solid #eeeeee; padding-top: 20px;">
+                    {% if context.show_info.content_warnings or context.show_info.audience_rating %}
+                    <tr>
+                        <td style="padding: 0 30px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td class="container-bg" bgcolor="#FFF8E1" style="padding: 15px 15px; border-radius: 8px;">
+                                        <h4 style="font-family: {{ context.config.branding.font_family }}; color: #F57F17; font-size: 16px; margin: 0 0 8px 0;">
+                                            ⚠️ Show Advisory: {{ context.show_info.audience_rating }}
+                                        </h4>
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 14px; line-height: 20px; margin: 0; color: #333333;">
+                                            {{ context.show_info.content_warnings }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td style="padding: 30px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; padding-top: 20px;">
                                 <tr>
                                     <td valign="top">
-                                        <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
+                                        <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
                                             Good to Know
                                         </h3>
                                         
-                                        {% if context.show_info.ticket_instructions %}
+                                        {% if context.config.details.ticket_instructions %}
                                         <p style="font-family: {{ context.config.branding.font_family }}; font-size: 15px; line-height: 22px; margin: 0 0 10px 0;">
-                                            🎟 <strong>Tickets:</strong> {{ context.show_info.ticket_instructions }}
+                                            🎟 <strong>Tickets:</strong> {{ context.config.details.ticket_instructions }}
                                         </p>
                                         {% endif %}
                                         
@@ -127,27 +221,26 @@
                                         {% endif %}
                                         
                                         <p style="font-family: {{ context.config.branding.font_family }}; font-size: 15px; line-height: 22px; margin: 0;">
-                                            {% if context.show_info.house_rules %}
-                                                ℹ️ <strong>Notes:</strong> {{ context.show_info.house_rules }} 
+                                            {% if context.config.details.house_rules %}
+                                                ℹ️ <strong>Rules:</strong> {{ context.config.details.house_rules }} 
                                             {% endif %}
                                             Questions? Call <strong>{{ context.config.details.contact_phone }}</strong>.
                                         </p>
                                     </td>
                                 </tr>
                             </table>
-
                         </td>
                     </tr>
 
                     <tr>
-                        <td style="padding: 20px 30px 40px 30px;">
+                        <td style="padding: 0 30px 40px 30px;">
                             <h2 style="font-family: {{ context.config.branding.font_family }}; color: #333333; margin-top: 0; margin-bottom: 20px; font-size: 22px; text-align: center;">
                                 Dining & Drinks
                             </h2>
 
                             {% for section, title in [('pre_show', 'Pre-Show Options'), ('post_show', 'Post-Show Options')] %}
                                 {% if context.places[section] %}
-                                    <h3 style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 18px; margin-top: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 5px;">
+                                    <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 18px; margin-top: 15px; border-bottom: 1px solid #eeeeee; padding-bottom: 5px;">
                                         {{ title }}
                                     </h3>
                                     {% for category_name, places_list in context.places[section].items() %}
@@ -158,17 +251,24 @@
                                             <ul style="font-family: {{ context.config.branding.font_family }}; font-size: 14px; margin-top: 0; padding-left: 20px; list-style-type: none;">
                                                 {% for place in places_list %}
                                                     <li style="margin-bottom: 12px;">
-                                                        <strong>{{ place.name }}</strong> ({{ place.rating }}★)
+                                                        <a href="{{ place.map_url }}" style="text-decoration: none; color: #333333; border-bottom: 1px dotted #999;">
+                                                            <strong>{{ place.name }}</strong>
+                                                        </a> 
+                                                        
+                                                        ({{ place.rating }}★)
                                                         
                                                         {% if place.is_promoted %}
-                                                            <span style="font-size: 10px; background-color: {{ context.config.branding.primary_color }}; color: white; padding: 2px 4px; border-radius: 4px; margin-left: 3px;">SPONSOR</span>
+                                                            <span class="sponsor-badge" style="font-size: 10px; background-color: {{ context.config.branding.primary_color }}; color: white; padding: 2px 4px; border-radius: 4px; margin-left: 3px;">SPONSOR</span>
                                                         {% endif %}
                                                         
-                                                        <span style="font-size: 11px; background-color: #f0f0f0; color: #555; padding: 2px 6px; border-radius: 4px; margin-left: 5px; white-space: nowrap;">
-                                                            ~{{ (place.distance_m / 80) | round | int }} min walk
+                                                        <span class="walking-badge" style="font-size: 11px; background-color: #f0f0f0; color: #555555; padding: 2px 6px; border-radius: 4px; margin-left: 5px; white-space: nowrap;">
+                                                            ~{{ (place.distance_m * 1.4 / 80) | round | int }} min walk
                                                         </span>
                                                         
-                                                        <br><span style="color: #666666; font-size: 13px;">{{ place.address }}</span>
+                                                        <br>
+                                                        <a href="{{ place.map_url }}" style="text-decoration: none; color: #666666; font-size: 13px;">
+                                                            {{ place.address }}
+                                                        </a>
                                                     </li>
                                                 {% endfor %}
                                             </ul>
@@ -180,8 +280,18 @@
                     </tr>
                     
                     <tr>
-                        <td bgcolor="#efefef" style="padding: 15px 30px; font-family: {{ context.config.branding.font_family }}; font-size: 12px; color: #777777; text-align: center;">
+                        <td class="container-bg" bgcolor="#efefef" style="padding: 15px 30px; font-family: {{ context.config.branding.font_family }}; font-size: 12px; color: #777777; text-align: center;">
                             Operational reminder from {{ context.config.theatre.name }}.
+                            
+                            <br><br>
+                            
+                            <p style="font-family: {{ context.config.branding.font_family }}; font-size: 10px; color: #999999; margin: 0;">
+                                This email was sent to {{ context.config.details.contact_email }}. | 
+                                <a href="*|UNSUB|*" style="color: #999999;">Unsubscribe</a>
+                            </p>
+                            <p style="font-family: {{ context.config.branding.font_family }}; font-size: 10px; color: #999999; margin: 5px 0 0 0;">
+                                *|LIST:ADDRESS|*
+                            </p>
                         </td>
                     </tr>
                 </table>
