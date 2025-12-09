@@ -13,15 +13,24 @@ The **Pre-Show Mailer** solves the common problem of audience members missing ke
 
 ## Quickstart: Generating an Email
 
-Theatre staff can generate a complete email body in just three steps, assuming the system is set up.
+Two options:
 
-1.  **Place Show Data:** Place your show-specific details (show_info.json) into the designated input folder.
-2.  **Run the Generator:** Open your terminal and run the executable program:
-    ```bash
-    ./preshow-mailer
-    ```
-    (Note: The exact command may vary if the tool is not packaged as a single executable.)
-3.  **Paste and Send:** Two files are generated (email.html and email.txt). Copy the HTML content and paste it directly into your ticketing system's email composer.
+1) **Dash Dashboard (recommended for staff)**
+   - Start the app: `source venv/bin/activate && python3 dashboard.py`
+   - Open `http://127.0.0.1:8050/` in your browser.
+   - Edit **Show Details** and **Theatre Details** directly in the UI.
+   - Use **Generate Preview** to see live HTML (light/dark + mobile/desktop toggles).
+   - Export HTML, Send Now, or Schedule (Mailchimp creds required; Send/Schedule buttons auto-disable if missing).
+   - Load starter files: upload theatre YAML or show JSON from the UI.
+   - Manage scheduled/sent campaigns from tabs (archive accuracy depends on using Mailchimp).
+
+2) **CLI (legacy)**
+   - Place show data: `data/examples/show_info.json`
+   - Run generator:
+     ```bash
+     python3 src/main.py --config data/examples/theatre_config.yaml --show data/examples/show_info.json --action generate
+     ```
+   - Outputs `email.html` and `email.txt`.
 
 ---
 
@@ -51,6 +60,8 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
 3.  **Install Dependencies:**
     ```bash
     pip install -e .
+    # For the dashboard:
+    pip install dash dash-bootstrap-components mailchimp-marketing
     ```
 
 ### 3. API Keys and Configuration
@@ -61,8 +72,8 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
     GOOGLE_PLACES_API_KEY="PASTE_YOUR_KEY_HERE"
     WEATHER_API_KEY="PASTE_YOUR_KEY_HERE"
     ```
-2.  **Theatre Configuration:** Edit the file data/examples/theatre_config.yaml with your theatre's address, colors, latitude/longitude, and default radii.
-3.  **Lists:** Customize the lists:whitelist and lists:blacklist sections in the YAML to prioritize sponsors and exclude unwanted businesses.
+2.  **Theatre Configuration:** Edit `data/examples/theatre_config.yaml` with address, colors, latitude/longitude, radii, concessions, sponsor info, and lists.
+3.  **Lists:** Customize `lists.whitelist` and `lists.blacklist` (comma-separated in the dashboard UI or YAML) to prioritize sponsors and exclude unwanted businesses.
 
 ---
 
@@ -74,6 +85,7 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
 | **Hyper-Local Weather** | WeatherAPI.com | Checks specific conditions for **Arrival** and **Departure** times. Displays large, accessible icons and temperatures. |
 | **Dining & Drinks** | Google Places API | Filters nearby businesses open during the Pre-Show [T-60 to T-15 mins] and Post-Show [T+5 to T+40 mins] windows. |
 | **Promotions** | theatre_config.yaml | Whitelisted sponsors are shown at the top of the list, regardless of proximity. |
+| **Dashboard UI** | dash / dbc | Live preview, export, send/schedule via Mailchimp; theme toggles; mobile/desktop preview; upload config/show files. |
 | **Accessibility** | theatre_config.yaml | Prominently features accessibility details and Box Office contact information. |
 
 ---
