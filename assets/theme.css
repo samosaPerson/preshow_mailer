@@ -1,22 +1,22 @@
 :root {
-    --bg: #0b1224;
-    --panel: #0f1b35;
-    --panel-alt: #152442;
-    --text: #e6ecff;
-    --muted: #aab6d6;
-    --accent: #1f5eff;
-    --accent-dark: #1749c9;
-    --accent-darker: #123a9f;
-    --border: #1e2e4d;
-    --surface: #0d1730;
-    --shadow: 0 16px 45px rgba(6, 12, 26, 0.35);
+    --bg: #203542;
+    --panel: #122836;
+    --panel-alt: #193647;
+    --text: #e9f2f2;
+    --muted: #b1c3c8;
+    --accent: #2e9a8f;
+    --accent-dark: #278579;
+    --accent-darker: #206d63;
+    --border: #23414f;
+    --surface: #1f303b;
+    --shadow: 0 16px 45px rgba(10, 24, 32, 0.32);
     --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 body, .body-bg {
-    background: radial-gradient(circle at 20% 20%, #132143 0%, #0b1224 40%, #070e1d 100%);
+    background: radial-gradient(circle at 20% 20%, #1a3645 0%, var(--bg) 45%, #0d1c26 100%);
     color: var(--text);
     font-family: var(--font-body);
 }
@@ -45,11 +45,13 @@ body, .body-bg {
 .card-body { color: var(--text); }
 
 .form-control, .form-control:focus, .dash-textarea, textarea {
-    background-color: #0f1b35;
+    background-color: #123141;
     color: #e6ecff;
     border: 1px solid #24365a;
     box-shadow: none;
     border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    min-height: 2.2rem;
 }
 
 .form-control:focus {
@@ -58,21 +60,22 @@ body, .body-bg {
 }
 
 .form-control-color {
-    padding: 0.2rem 0.4rem;
-    height: 2.4rem;
-    background: #0f1b35;
-    border: 1px solid #24365a;
+    padding: 0.15rem 0.4rem;
+    height: 2rem;
+    background: #123141;
+    border: 1px solid #2b4c59;
     border-radius: 8px;
 }
 .hex-input {
-    background: #11264d !important;
+    background: #123141 !important;
     color: #f5f7ff !important;
-    border-color: #2f4a7a !important;
+    border-color: #2b4c59 !important;
+    padding: 0.4rem 0.6rem !important;
 }
 
 .upload-box {
     background-color: var(--panel-alt);
-    border: 1px dashed #2b3f67;
+    border: 1px dashed #2d5562;
     color: var(--muted);
     text-align: center;
     cursor: pointer;
@@ -84,31 +87,31 @@ body, .body-bg {
 }
 
 .action-btn {
-    background: linear-gradient(135deg, #2a62ff, #1f5eff);
-    border: 1px solid #1b4bcc;
-    color: #eaf0ff;
+    background: linear-gradient(135deg, #38b09f, #2e9a8f);
+    border: 1px solid #2a8a7f;
+    color: #eaf6f6;
     border-radius: 8px;
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #2554d8, #1b4bcc);
-    color: #eaf0ff;
+    background: linear-gradient(135deg, #2fa190, #28887e);
+    color: #eaf6f6;
 }
 
 .action-btn:active, .action-btn:focus {
-    background: #1742ad;
-    color: #eaf0ff;
+    background: #24756d;
+    color: #eaf6f6;
 }
 
 .secondary-btn {
-    background: #122241;
-    color: #d7e1ff;
-    border: 1px solid #24365a;
+    background: #1d3642;
+    color: #d7efef;
+    border: 1px solid #2b545f;
     border-radius: 8px;
 }
 
 .secondary-btn:hover {
-    background: #162a4f;
+    background: #1a303a;
 }
 
 .toggle-group label {
@@ -143,7 +146,7 @@ body, .body-bg {
 }
 
 .toggle-group label:has(input:checked) {
-    background: #173263;
+    background: #1e4f59;
     color: #eaf0ff;
     border-color: var(--accent);
 }
@@ -156,7 +159,7 @@ body, .body-bg {
 .nav-tabs {
     border-bottom: 1px solid #1b2946 !important;
     box-shadow: none !important;
-    background: #0c162d;
+    background: #122c38;
     border-radius: 10px 10px 0 0;
 }
 .nav-tabs .nav-link {
@@ -182,7 +185,7 @@ body, .body-bg {
 }
 
 .list-group-item-action:hover {
-    background-color: #152442;
+    background-color: #1c3746;
     color: #fff;
 }
 .hex-input {

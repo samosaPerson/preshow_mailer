@@ -106,6 +106,17 @@ def build_config_from_inputs(config_base, theatre_name, theatre_address, phone, 
     return config
 
 
+def normalize_hex(val):
+    if not val:
+        return ""
+    val = val.strip()
+    if not val.startswith("#"):
+        val = "#" + val
+    if len(val) in (4, 7):
+        return val
+    return val
+
+
 def generate_email_html(show_data, config):
     html_body, _ = generate_email(config, show_data)
     return html_body
@@ -234,7 +245,7 @@ hero = dbc.Row([
                className="text-white-50 mb-0")
     ])
 ], className="p-4 rounded-3", style={
-    "background": "linear-gradient(120deg, #0f1f3f 0%, #11264d 50%, #0c1934 100%)",
+    "background": "linear-gradient(120deg, #144550 0%, #165264 50%, #103b49 100%)",
     "boxShadow": "0 14px 40px rgba(6,12,26,0.35)",
     "border": "1px solid #1e2e4d"
 })
@@ -371,7 +382,8 @@ def editor_tab():
             html.Div(id="preview-status"),
             preview_controls,
             dcc.Loading(html.Iframe(id="preview-frame", style={
-                "width": "100%", "height": "85vh", "border": "1px solid #1f1f1f", "borderRadius": "8px"
+                "width": "100%", "height": "92vh", "border": "1px solid #1f1f1f", "borderRadius": "8px",
+                "background": "#102532"
             }, className="bg-white"), type="default")
         ]),
         className="bg-dark text-light"
@@ -516,6 +528,60 @@ def toggle_theatre_section(n, is_open):
     new_state = not is_open
     chevron_class = "me-2 chevron-icon rotate-90" if new_state else "me-2 chevron-icon"
     return new_state, chevron_class
+
+
+@app.callback(
+    Output("primary-color-hex", "value", allow_duplicate=True),
+    Input("primary-color", "value"),
+    prevent_initial_call=True
+)
+def sync_primary_color_to_hex(val):
+    return val
+
+
+@app.callback(
+    Output("primary-color", "value", allow_duplicate=True),
+    Input("primary-color-hex", "value"),
+    prevent_initial_call=True
+)
+def sync_primary_hex_to_color(val):
+    return normalize_hex(val)
+
+
+@app.callback(
+    Output("secondary-color-hex", "value", allow_duplicate=True),
+    Input("secondary-color", "value"),
+    prevent_initial_call=True
+)
+def sync_secondary_color_to_hex(val):
+    return val
+
+
+@app.callback(
+    Output("secondary-color", "value", allow_duplicate=True),
+    Input("secondary-color-hex", "value"),
+    prevent_initial_call=True
+)
+def sync_secondary_hex_to_color(val):
+    return normalize_hex(val)
+
+
+@app.callback(
+    Output("headline-color-hex", "value", allow_duplicate=True),
+    Input("headline-color", "value"),
+    prevent_initial_call=True
+)
+def sync_headline_color_to_hex(val):
+    return val
+
+
+@app.callback(
+    Output("headline-color", "value", allow_duplicate=True),
+    Input("headline-color-hex", "value"),
+    prevent_initial_call=True
+)
+def sync_headline_hex_to_color(val):
+    return normalize_hex(val)
 
 
 @app.callback(
