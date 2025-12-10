@@ -127,20 +127,22 @@ def apply_preview_overrides(html_body, theme_mode):
         return html_body
     styles = []
     if theme_mode == "dark":
+        # Force dark color-scheme so preview shows dark email colors regardless of OS preference.
         styles.append(":root { color-scheme: dark !important; }")
         styles.append("""
             body, .body-bg, .container-bg {
-                background-color: #121212 !important;
-                color: #f1f1f1 !important;
+                background-color: #121212 !important; /* Dark preview canvas */
+                color: #f1f1f1 !important;             /* Light text on dark canvas */
             }
             h1,h2,h3,h4,p,li,div { color: #f1f1f1 !important; }
         """)
     elif theme_mode == "light":
+        # Force light color-scheme so preview stays light even if user prefers dark.
         styles.append(":root { color-scheme: light !important; }")
         styles.append("""
             body, .body-bg, .container-bg {
-                background-color: #ffffff !important;
-                color: #1a1a1a !important;
+                background-color: #ffffff !important; /* Light preview canvas */
+                color: #1a1a1a !important;             /* Dark text on light canvas */
             }
             h1,h2,h3,h4,p,li,div { color: #1a1a1a !important; }
             @media (prefers-color-scheme: dark) {
@@ -245,9 +247,9 @@ hero = dbc.Row([
                className="text-white-50 mb-0")
     ])
 ], className="p-4 rounded-3", style={
-    "background": "linear-gradient(120deg, #144550 0%, #165264 50%, #103b49 100%)",
-    "boxShadow": "0 14px 40px rgba(6,12,26,0.35)",
-    "border": "1px solid #1e2e4d"
+    "background": "linear-gradient(120deg, #144550 0%, #165264 50%, #103b49 100%)",  # Header banner gradient
+    "boxShadow": "0 14px 40px rgba(6,12,26,0.35)",                                   # Depth under banner
+    "border": "1px solid #1e2e4d"                                                    # Edge line around hero
 })
 
 
@@ -382,8 +384,11 @@ def editor_tab():
             html.Div(id="preview-status"),
             preview_controls,
             dcc.Loading(html.Iframe(id="preview-frame", style={
-                "width": "100%", "height": "92vh", "border": "1px solid #1f1f1f", "borderRadius": "8px",
-                "background": "#102532"
+                "width": "100%",                   # Default desktop width
+                "height": "92vh",                  # Tall enough to see full email
+                "border": "1px solid #1f1f1f",     # Dark frame around email preview
+                "borderRadius": "8px",             # Rounded iframe corners
+                "background": "#102532"            # Fallback backdrop while loading
             }, className="bg-white"), type="default")
         ]),
         className="bg-dark text-light"
@@ -483,9 +488,9 @@ app.layout = dbc.Container([
     ], id="schedule-modal", is_open=False),
     dcc.Download(id="download-html"),
 ], fluid=True, className="pb-4", style={
-    "background": "#0f0f10",
-    "minHeight": "100vh",
-    "color": "#f8f9fa"
+    "background": "#0f0f10",   # App shell background behind cards
+    "minHeight": "100vh",      # Ensure full-height backdrop
+    "color": "#f8f9fa"         # Default text color on shell
 })
 
 
@@ -767,11 +772,11 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
 
         preview_html = apply_preview_overrides(html_body, theme_mode)
         iframe_style = {
-            "width": "420px" if viewport_mode == "mobile" else "100%",
-            "height": "85vh",
-            "border": "1px solid #1f1f1f",
-            "borderRadius": "8px",
-            "margin": "0 auto",
+            "width": "420px" if viewport_mode == "mobile" else "100%",  # Constrain preview to mobile width toggle
+            "height": "85vh",                                          # Show long emails without scrolling page
+            "border": "1px solid #1f1f1f",                             # Frame around iframe
+            "borderRadius": "8px",                                     # Rounded preview corners
+            "margin": "0 auto",                                        # Center preview frame
             "display": "block"
         }
         return preview_html, html_body, status, iframe_style

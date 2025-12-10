@@ -59,9 +59,8 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
     ```
 3.  **Install Dependencies:**
     ```bash
-    pip install -e .
-    # For the dashboard:
-    pip install dash dash-bootstrap-components mailchimp-marketing
+    pip install -r requirements.txt
+    # (or) pip install -e .
     ```
 
 ### 3. API Keys and Configuration
@@ -69,8 +68,12 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
 1.  **Environment Variables:** Create a file named **.env** in the project root to store your private API keys. **Do not commit this file to Git.**
     ```dotenv
     # .env
-    GOOGLE_PLACES_API_KEY="PASTE_YOUR_KEY_HERE"
-    WEATHER_API_KEY="PASTE_YOUR_KEY_HERE"
+    GOOGLE_PLACES_API_KEY="PASTE_YOUR_KEY_HERE"   # Required for dining/nearby lookups
+    WEATHER_API_KEY="PASTE_YOUR_KEY_HERE"         # Required for hyper-local forecast
+    # Mailchimp (only if using Send/Schedule buttons in the dashboard)
+    MAILCHIMP_API_KEY="PASTE_YOUR_KEY_HERE"
+    MAILCHIMP_SERVER_PREFIX="usX"                 # e.g., us1, us16
+    MAILCHIMP_LIST_ID="PASTE_YOUR_LIST_ID"
     ```
 2.  **Theatre Configuration:** Edit `data/examples/theatre_config.yaml` with address, colors, latitude/longitude, radii, concessions, sponsor info, and lists.
 3.  **Lists:** Customize `lists.whitelist` and `lists.blacklist` (comma-separated in the dashboard UI or YAML) to prioritize sponsors and exclude unwanted businesses.
@@ -85,7 +88,7 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
 | **Hyper-Local Weather** | WeatherAPI.com | Checks specific conditions for **Arrival** and **Departure** times. Displays large, accessible icons and temperatures. |
 | **Dining & Drinks** | Google Places API | Filters nearby businesses open during the Pre-Show [T-60 to T-15 mins] and Post-Show [T+5 to T+40 mins] windows. |
 | **Promotions** | theatre_config.yaml | Whitelisted sponsors are shown at the top of the list, regardless of proximity. |
-| **Dashboard UI** | dash / dbc | Live preview, export, send/schedule via Mailchimp; theme toggles; mobile/desktop preview; upload config/show files. |
+| **Dashboard UI** | dash / dbc | Live preview, export, send/schedule via Mailchimp (requires Mailchimp keys); theme toggles; mobile/desktop preview; upload config/show files. |
 | **Accessibility** | theatre_config.yaml | Prominently features accessibility details and Box Office contact information. |
 
 ---

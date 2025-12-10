@@ -1,31 +1,33 @@
+/* Global palette and sizing tokens for the dashboard UI */
 :root {
-    --bg: #203542;
-    --panel: #122836;
-    --panel-alt: #193647;
-    --text: #e9f2f2;
-    --muted: #b1c3c8;
-    --accent: #2e9a8f;
-    --accent-dark: #278579;
-    --accent-darker: #206d63;
-    --border: #23414f;
-    --surface: #1f303b;
-    --shadow: 0 16px 45px rgba(10, 24, 32, 0.32);
-    --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --bg: #203542;            /* Page background gradient anchor: deep blue-green */
+    --panel: #122836;         /* Default card background for dark panels */
+    --panel-alt: #193647;     /* Alternate panel fill for contrast (lists/uploads) */
+    --text: #e9f2f2;          /* Primary text on dark surfaces */
+    --muted: #b1c3c8;         /* Secondary labels, helper text */
+    --accent: #2e9a8f;        /* Main action color for CTAs and active states */
+    --accent-dark: #278579;   /* Hover state for accent actions */
+    --accent-darker: #206d63; /* Pressed/active state for accent actions */
+    --border: #23414f;        /* Default border lines on panels */
+    --surface: #1f303b;       /* Neutral surface for inputs and nav */
+    --shadow: 0 16px 45px rgba(10, 24, 32, 0.32); /* Card drop shadow depth */
+    --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; /* Base font stack */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 body, .body-bg {
+    /* Core app background with subtle radial spotlight; keeps copy legible on dark base */
     background: radial-gradient(circle at 20% 20%, #1a3645 0%, var(--bg) 45%, #0d1c26 100%);
     color: var(--text);
     font-family: var(--font-body);
 }
 
 .card, .bg-dark {
-    background-color: var(--panel) !important;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    border-radius: 12px;
+    background-color: var(--panel) !important; /* Dark card fill */
+    border: 1px solid var(--border);           /* Edge definition for cards */
+    box-shadow: var(--shadow);                 /* Elevation depth */
+    border-radius: 12px;                       /* Card rounding */
 }
 
 .chevron-icon {
@@ -45,41 +47,41 @@ body, .body-bg {
 .card-body { color: var(--text); }
 
 .form-control, .form-control:focus, .dash-textarea, textarea {
-    background-color: #123141;
-    color: #e6ecff;
-    border: 1px solid #24365a;
+    background-color: #123141;          /* Input background on dark UI */
+    color: #e6ecff;                     /* Input text color */
+    border: 1px solid #24365a;          /* Input border for separation */
     box-shadow: none;
-    border-radius: 8px;
-    padding: 0.4rem 0.6rem;
-    min-height: 2.2rem;
+    border-radius: 8px;                 /* Input rounding */
+    padding: 0.4rem 0.6rem;             /* Input padding for touch targets */
+    min-height: 2.2rem;                 /* Baseline height for controls */
 }
 
 .form-control:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px rgba(31,94,255,0.35);
+    border-color: var(--accent);        /* Accent focus ring color */
+    box-shadow: 0 0 0 1px rgba(31,94,255,0.35); /* Glow to signal focus */
 }
 
 .form-control-color {
-    padding: 0.15rem 0.4rem;
-    height: 2rem;
+    padding: 0.15rem 0.4rem;            /* Compact padding for color swatch */
+    height: 2rem;                       /* Aligns with text inputs */
     background: #123141;
-    border: 1px solid #2b4c59;
+    border: 1px solid #2b4c59;          /* Dark border around color picker */
     border-radius: 8px;
 }
 .hex-input {
     background: #123141 !important;
     color: #f5f7ff !important;
     border-color: #2b4c59 !important;
-    padding: 0.4rem 0.6rem !important;
+    padding: 0.4rem 0.6rem !important;  /* Aligns hex inputs with text fields */
 }
 
 .upload-box {
-    background-color: var(--panel-alt);
-    border: 1px dashed #2d5562;
-    color: var(--muted);
+    background-color: var(--panel-alt); /* Dropzone background */
+    border: 1px dashed #2d5562;         /* Dashed border hinting drag-drop */
+    color: var(--muted);                /* Instructional copy color */
     text-align: center;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 10px;                /* Soft edges on drop area */
 }
 
 .action-btn, .btn {
@@ -87,41 +89,41 @@ body, .body-bg {
 }
 
 .action-btn {
-    background: linear-gradient(135deg, #38b09f, #2e9a8f);
-    border: 1px solid #2a8a7f;
-    color: #eaf6f6;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #38b09f, #2e9a8f); /* Primary CTA gradient */
+    border: 1px solid #2a8a7f;                            /* CTA border for definition */
+    color: #eaf6f6;                                       /* CTA text color */
+    border-radius: 8px;                                   /* CTA rounding */
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #2fa190, #28887e);
+    background: linear-gradient(135deg, #2fa190, #28887e); /* Hover gradient step */
     color: #eaf6f6;
 }
 
 .action-btn:active, .action-btn:focus {
-    background: #24756d;
+    background: #24756d;              /* Pressed CTA background */
     color: #eaf6f6;
 }
 
 .secondary-btn {
-    background: #1d3642;
-    color: #d7efef;
-    border: 1px solid #2b545f;
+    background: #1d3642;              /* Secondary action background */
+    color: #d7efef;                   /* Secondary text color */
+    border: 1px solid #2b545f;        /* Secondary border */
     border-radius: 8px;
 }
 
 .secondary-btn:hover {
-    background: #1a303a;
+    background: #1a303a;              /* Darken on hover for secondary buttons */
 }
 
 .toggle-group label {
     display: inline-flex;
     align-items: center;
     margin-right: 8px;
-    padding: 8px 14px;
-    border-radius: 12px;
-    border: 1px solid #24365a;
-    background: #0f1b35;
+    padding: 8px 14px;                        /* Clickable padding for radio items */
+    border-radius: 12px;                      /* Pill-like radio containers */
+    border: 1px solid #24365a;                /* Outline for unselected toggles */
+    background: #0f1b35;                      /* Base fill for radio labels */
     color: var(--muted);
     cursor: pointer;
     user-select: none;
@@ -131,65 +133,65 @@ body, .body-bg {
 
 .toggle-group input {
     appearance: none;
-    width: 14px;
+    width: 14px;                              /* Custom radio size */
     height: 14px;
     border-radius: 50%;
-    border: 2px solid #2d4066;
+    border: 2px solid #2d4066;                /* Ring for unchecked radio */
     background: transparent;
     position: relative;
-    accent-color: var(--accent);
+    accent-color: var(--accent);              /* Accent dot when checked */
 }
 
 .toggle-group input:checked {
     border-color: var(--accent);
-    background: var(--accent);
+    background: var(--accent);                /* Fill the radio when selected */
 }
 
 .toggle-group label:has(input:checked) {
-    background: #1e4f59;
-    color: #eaf0ff;
-    border-color: var(--accent);
+    background: #1e4f59;                      /* Selected radio label fill */
+    color: #eaf0ff;                           /* Selected label text color */
+    border-color: var(--accent);              /* Selected label outline */
 }
 
 .toggle-group label:hover {
-    background: #122852;
+    background: #122852;                      /* Hover affordance for radios */
 }
 
 /* Tabs */
 .nav-tabs {
-    border-bottom: 1px solid #1b2946 !important;
+    border-bottom: 1px solid #1b2946 !important; /* Divider under tab bar */
     box-shadow: none !important;
-    background: #122c38;
-    border-radius: 10px 10px 0 0;
+    background: #122c38;                         /* Tab bar fill */
+    border-radius: 10px 10px 0 0;                /* Round top corners of tab set */
 }
 .nav-tabs .nav-link {
     border: 0 !important;
-    color: var(--muted) !important;
+    color: var(--muted) !important;              /* Inactive tab text */
     background: transparent !important;
     box-shadow: none !important;
 }
 .nav-tabs .nav-link.active {
-    color: #eaf0ff !important;
-    background: #0f1d3a !important;
+    color: #eaf0ff !important;                   /* Active tab text */
+    background: #0f1d3a !important;              /* Active tab fill */
     border: 0 !important;
-    border-bottom: 2px solid var(--accent) !important;
+    border-bottom: 2px solid var(--accent) !important; /* Accent underline for active tab */
     box-shadow: none !important;
 }
 
 .list-group-item {
-    background-color: var(--panel-alt);
-    color: var(--text);
-    border: 1px solid var(--border);
+    background-color: var(--panel-alt); /* List tile background */
+    color: var(--text);                 /* List text color */
+    border: 1px solid var(--border);    /* List tile outline */
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 8px;                 /* Tile rounding */
 }
 
 .list-group-item-action:hover {
-    background-color: #1c3746;
+    background-color: #1c3746;          /* Hover background for selectable lists */
     color: #fff;
 }
 .hex-input {
-    background: #0f1b35 !important;
-    color: #f7f9ff !important;
-    border-color: #2f4a7a !important;
+    background: #0f1b35 !important;     /* Hex field dark fill */
+    color: #f7f9ff !important;          /* Hex field text */
+    border-color: #2f4a7a !important;   /* Hex field outline */
 }
