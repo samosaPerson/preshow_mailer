@@ -49,7 +49,7 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
 
 1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/your-username/preshow_mailer.git](https://github.com/your-username/preshow_mailer.git)
+    git clone https://github.com/samosaPerson/preshow_mailer.git
     cd preshow_mailer
     ```
 2.  **Create & Activate Virtual Environment:**
