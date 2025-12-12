@@ -28,7 +28,14 @@ Two options:
    - Place show data: `data/examples/show_info.json`
    - Run generator:
      ```bash
-     python3 src/main.py --config data/examples/theatre_config.yaml --show data/examples/show_info.json --action generate
+     # Standard (no Mailchimp merge tags, includes TXT):
+     python3 src/main.py --config data/examples/theatre_config.yaml --show data/examples/show_info.json --action generate --compliance standard
+
+     # Mailchimp merge-tag version (unsubscribe/address footer):
+     python3 src/main.py --config data/examples/theatre_config.yaml --show data/examples/show_info.json --action generate --compliance mailchimp
+
+     # Generate both with one data fetch:
+     python3 src/main.py --config data/examples/theatre_config.yaml --show data/examples/show_info.json --action generate --compliance both
      ```
    - Outputs `email.html` and `email.txt`.
 

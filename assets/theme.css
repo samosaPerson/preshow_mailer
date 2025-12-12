@@ -195,3 +195,30 @@ body, .body-bg {
     color: #f7f9ff !important;          /* Hex field text */
     border-color: #2f4a7a !important;   /* Hex field outline */
 }
+
+/* Status alerts (preview/export/send feedback) */
+.status-alert {
+    color: #ffffff !important;
+}
+.status-alert.alert-success {
+    background-color: #1f4f36 !important;  /* Green success */
+    border: 1px solid #193d2c !important;
+}
+.status-alert.alert-info {
+    background-color: #7358d0 !important;  /* Lightened purple info */
+    border: 1px solid #5c46a6 !important;
+}
+.status-alert.alert-danger {
+    background-color: #6b1f1f !important;  /* Red danger */
+    border: 1px solid #4f1515 !important;
+}
+.status-alert .btn-close {
+    filter: invert(1);
+    opacity: 0.85;
+}
+.status-timestamp {
+    float: right;
+    font-size: 11px;
+    opacity: 0.9;
+    margin-left: 10px;
+}

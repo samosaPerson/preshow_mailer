@@ -31,17 +31,8 @@ def simple_time(iso_date_str):
     try: return datetime.fromisoformat(iso_date_str).strftime("%I:%M %p")
     except: return "TBD"
 
-def generate_email(config_data, show_data):
-    template_dir = resource_path('src/templates')
-    file_loader = FileSystemLoader(template_dir)
-    env = Environment(loader=file_loader)
-    
-    env.filters['format_date'] = format_date
-    env.filters['runtime'] = runtime
-    env.filters['simple_time'] = simple_time # Replaced logic-heavy filters with this simple one
-    
-    template = env.get_template('email_body.html')
-
+def build_context(config_data, show_data):
+    """Fetch data and build the render context once."""
     # 1. Fetch Weather
     weather_data = get_forecast(
         latitude=config_data['theatre']['location']['latitude'],
@@ -54,46 +45,64 @@ def generate_email(config_data, show_data):
     # 2. Calculate Place Check Times
     start_dt = datetime.fromisoformat(show_data['start_time'])
     end_dt = datetime.fromisoformat(show_data['end_time'])
-    
-    # Pre-Show: Open from T-60 to T-15
+
     pre_show_checks = [
         start_dt - timedelta(minutes=60),
         start_dt - timedelta(minutes=15)
     ]
-    
-    # Post-Show: Open from T+5 to T+40
+
     post_show_checks = [
         end_dt + timedelta(minutes=5),
         end_dt + timedelta(minutes=40)
     ]
 
     # 3. Fetch Places
-    google_api_key = os.environ.get("GOOGLE_PLACES_API_KEY") 
+    google_api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
     loc = config_data['theatre']['location']
     radius = config_data['theatre']['radius_meters']
     whitelist_radius = config_data['theatre'].get('whitelist_radius_meters', 1500)
-    
+
     pre_show_places = get_nearby_places(
         loc['latitude'], loc['longitude'], radius,
         config_data['business_categories']['pre_show'],
-        pre_show_checks, # Pass list
-        config_data.get('lists', {}),
-        google_api_key, whitelist_radius
-    )
-    
-    post_show_places = get_nearby_places(
-        loc['latitude'], loc['longitude'], radius,
-        config_data['business_categories']['post_show'],
-        post_show_checks, # Pass list
+        pre_show_checks,
         config_data.get('lists', {}),
         google_api_key, whitelist_radius
     )
 
-    context = {
+    post_show_places = get_nearby_places(
+        loc['latitude'], loc['longitude'], radius,
+        config_data['business_categories']['post_show'],
+        post_show_checks,
+        config_data.get('lists', {}),
+        google_api_key, whitelist_radius
+    )
+
+    return {
         'config': config_data,
         'show_info': show_data,
         'weather': weather_data,
         'places': {'pre_show': pre_show_places, 'post_show': post_show_places}
     }
 
-    return template.render(context=context), "Text version placeholder"
+
+def render_email_from_context(context, include_mailchimp_footer=True):
+    """Render HTML/text from a prebuilt context without refetching data."""
+    template_dir = resource_path('src/templates')
+    file_loader = FileSystemLoader(template_dir)
+    env = Environment(loader=file_loader)
+
+    env.filters['format_date'] = format_date
+    env.filters['runtime'] = runtime
+    env.filters['simple_time'] = simple_time
+
+    template = env.get_template('email_body.html')
+    render_context = dict(context)
+    render_context['include_mailchimp_footer'] = include_mailchimp_footer
+    return template.render(context=render_context), "Text version placeholder"
+
+
+def generate_email(config_data, show_data, include_mailchimp_footer=True):
+    """Public entry point for generating email HTML/text."""
+    ctx = build_context(config_data, show_data)
+    return render_email_from_context(ctx, include_mailchimp_footer)

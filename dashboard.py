@@ -4,6 +4,7 @@ from pathlib import Path
 import base64
 import io
 import os
+import re
 
 import dash
 from dash import Dash, ALL, Input, Output, State, dcc, html
@@ -12,7 +13,7 @@ from dash.exceptions import PreventUpdate
 from dotenv import load_dotenv
 import yaml
 
-from src.generator import generate_email
+from src.generator import generate_email, build_context, render_email_from_context
 from src import sender
 
 
@@ -117,9 +118,48 @@ def normalize_hex(val):
     return val
 
 
-def generate_email_html(show_data, config):
-    html_body, _ = generate_email(config, show_data)
+def generate_email_html(show_data, config, include_mailchimp_footer=True):
+    ctx = build_context(config, show_data)
+    html_body, _ = render_email_from_context(ctx, include_mailchimp_footer=include_mailchimp_footer)
     return html_body
+
+
+def generate_email_variants(show_data, config):
+    """Generate both standard and Mailchimp versions using a single data fetch."""
+    ctx = build_context(config, show_data)
+    html_mailchimp, _ = render_email_from_context(ctx, include_mailchimp_footer=True)
+    html_standard, _ = render_email_from_context(ctx, include_mailchimp_footer=False)
+    return {"mailchimp": html_mailchimp, "standard": html_standard}
+
+
+def now_hms():
+    return datetime.now().strftime("%H:%M:%S")
+
+
+def status_alert(message, color="info"):
+    stamped = [message, html.Span(now_hms(), className="status-timestamp")]
+    return dbc.Alert(stamped, color=color, dismissable=True, className="status-alert")
+
+
+def build_export_filename(show_title, start_time, provided_name=None):
+    """Create a safe default export filename like 'Show_Title_2024-06-01T19-00.html'."""
+    if provided_name:
+        name = provided_name.strip()
+    else:
+        title = (show_title or "email").strip() or "email"
+        title_slug = re.sub(r"[^A-Za-z0-9_-]+", "_", title)
+        time_part = ""
+        if start_time:
+            time_part = re.sub(r"[^A-Za-z0-9_-]+", "-", start_time)
+        name = f"{title_slug}_{time_part}" if time_part else title_slug
+    if not name.lower().endswith(".html"):
+        name += ".html"
+    return name
+
+
+def ensure_variants(cached):
+    """Return cached variants dict if valid, else None."""
+    return cached if isinstance(cached, dict) else None
 
 
 def apply_preview_overrides(html_body, theme_mode):
@@ -347,6 +387,38 @@ def editor_tab():
         className="mb-3"
     )
 
+    export_panel = dbc.Card(
+        dbc.CardBody([
+            html.H6("Export options", className="fw-semibold mb-3"),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Label("Export filename"),
+                    dcc.Input(
+                        id="export-filename",
+                        type="text",
+                        value=build_export_filename(show_defaults.get("show_title"), show_defaults.get("start_time")),
+                        className="form-control",
+                        placeholder="e.g., Show_Title_2024-06-01T19-00.html"
+                    )
+                ], md=7),
+                dbc.Col([
+                    dbc.Label("Export mode"),
+                    dcc.RadioItems(
+                        id="export-mode",
+                        options=[
+                            {"label": "Standard (no Mailchimp tags)", "value": "standard"},
+                            {"label": "Mailchimp merge tags", "value": "mailchimp"}
+                        ],
+                        value="standard",
+                        inline=False,
+                        className="toggle-group"
+                    )
+                ], md=5)
+            ], className="g-2 mb-2")
+        ]),
+        className="mb-2"
+    )
+
     actions = dbc.Row([
         dbc.Col(dbc.Button("Generate Preview", id="preview-btn", color="primary", className="w-100 action-btn")),
         dbc.Col(dbc.Button("Export HTML", id="export-btn", color="light", className="w-100 action-btn")),
@@ -422,7 +494,7 @@ def editor_tab():
 
     return dbc.Row([
         dbc.Col([show_section, theatre_section], lg=5),
-        dbc.Col([actions, mailchimp_note, html.Div(id="export-status"), preview], lg=7)
+        dbc.Col([export_panel, actions, mailchimp_note, html.Div(id="export-status"), preview], lg=7)
     ], className="mt-3")
 
 
@@ -629,7 +701,7 @@ def load_config_upload(contents, filename):
         concessions = data.get("concessions", {})
         sponsor = concessions.get("sponsor", {})
         lists_cfg = data.get("lists", {})
-        status = dbc.Alert(f"Loaded config from {filename}.", color="success", dismissable=True)
+        status = status_alert(f"Loaded config from {filename}.", color="success")
         return (
             theatre.get("name", ""),
             theatre.get("address", ""),
@@ -656,7 +728,7 @@ def load_config_upload(contents, filename):
             status
         )
     except Exception as exc:  # pragma: no cover
-        status = dbc.Alert(f"Failed to load config: {exc}", color="danger", dismissable=True)
+        status = status_alert(f"Failed to load config: {exc}", color="danger")
         return (dash.no_update,) * 22 + (status,)
 
 
@@ -681,7 +753,7 @@ def load_show_upload(contents, filename):
     try:
         decoded = decode_upload(contents)
         data = json.load(io.BytesIO(decoded))
-        status = dbc.Alert(f"Loaded show data from {filename}.", color="success", dismissable=True)
+        status = status_alert(f"Loaded show data from {filename}.", color="success")
         return (
             data.get("show_title", ""),
             data.get("timezone_abbreviation", ""),
@@ -695,7 +767,7 @@ def load_show_upload(contents, filename):
             status
         )
     except Exception as exc:  # pragma: no cover
-        status = dbc.Alert(f"Failed to load show file: {exc}", color="danger", dismissable=True)
+        status = status_alert(f"Failed to load show file: {exc}", color="danger")
         return (dash.no_update,) * 9 + (status,)
 
 
@@ -705,6 +777,7 @@ def load_show_upload(contents, filename):
     Output("preview-status", "children"),
     Output("preview-frame", "style"),
     Input("preview-btn", "n_clicks"),
+    Input("export-mode", "value"),
     Input("theme-toggle", "value"),
     Input("viewport-toggle", "value"),
     State("generated-html", "data"),
@@ -739,7 +812,7 @@ def load_show_upload(contents, filename):
     State("radius", "value"),
     State("whitelist-radius", "value")
 )
-def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_data, show_title, start_time,
+def generate_preview(n_clicks, export_mode, theme_mode, viewport_mode, cached_html, config_data, show_title, start_time,
                      end_time, doors_open, intermission, tz_abbrev, audience_rating, content_warnings,
                      theatre_name, theatre_address, theatre_phone, theatre_email, theatre_accessibility,
                      logo_url, primary_color, primary_color_hex, secondary_color, secondary_color_hex,
@@ -747,10 +820,11 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
                      whitelist_csv, blacklist_csv, latitude, longitude, radius, whitelist_radius):
     ctx = dash.callback_context
     triggered = ctx.triggered_id
-    if not triggered and not cached_html:
+    cached_variants = ensure_variants(cached_html)
+    if not triggered and not cached_variants:
         raise PreventUpdate
 
-    regenerate = triggered == "preview-btn" or not cached_html
+    regenerate = triggered == "preview-btn" or not cached_variants
 
     try:
         if regenerate:
@@ -764,11 +838,16 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
                 concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
-            html_body = generate_email_html(show_data, config)
-            status = dbc.Alert("Preview updated with latest inputs.", color="success", dismissable=True, fade=True)
+            html_variants = generate_email_variants(show_data, config)
+            status = status_alert("Preview updated with latest inputs.", color="success")
         else:
-            html_body = cached_html
+            html_variants = cached_variants
             status = dash.no_update
+
+        if not html_variants:
+            raise PreventUpdate
+
+        html_body = html_variants.get(export_mode, html_variants.get("standard"))
 
         preview_html = apply_preview_overrides(html_body, theme_mode)
         iframe_style = {
@@ -779,9 +858,9 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
             "margin": "0 auto",                                        # Center preview frame
             "display": "block"
         }
-        return preview_html, html_body, status, iframe_style
+        return preview_html, html_variants, status, iframe_style
     except Exception as exc:  # pragma: no cover - UI feedback path
-        status = dbc.Alert(f"Could not generate preview: {exc}", color="danger", dismissable=True)
+        status = status_alert(f"Could not generate preview: {exc}", color="danger")
         return dash.no_update, dash.no_update, status, dash.no_update
 
 
@@ -790,6 +869,8 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
     Output("generated-html", "data", allow_duplicate=True),
     Output("export-status", "children"),
     Input("export-btn", "n_clicks"),
+    State("export-mode", "value"),
+    State("export-filename", "value"),
     State("generated-html", "data"),
     State("config-store", "data"),
     State("show-title", "value"),
@@ -823,7 +904,7 @@ def generate_preview(n_clicks, theme_mode, viewport_mode, cached_html, config_da
     State("whitelist-radius", "value"),
     prevent_initial_call=True
 )
-def export_html(n_clicks, cached_html, config_data, show_title, start_time, end_time, doors_open,
+def export_html(n_clicks, export_mode, export_filename, cached_html, config_data, show_title, start_time, end_time, doors_open,
                 intermission, tz_abbrev, audience_rating, content_warnings,
                 theatre_name, theatre_address, theatre_phone, theatre_email, theatre_accessibility,
                 logo_url, primary_color, primary_color_hex, secondary_color, secondary_color_hex,
@@ -832,9 +913,10 @@ def export_html(n_clicks, cached_html, config_data, show_title, start_time, end_
     if not n_clicks:
         raise PreventUpdate
 
-    html_body = cached_html
+    include_mailchimp_footer = export_mode == "mailchimp"
+    html_variants = ensure_variants(cached_html)
     status = None
-    if not html_body:
+    if not html_variants:
         try:
             show_data = build_show_data_from_inputs(show_title, start_time, end_time, doors_open,
                                                     intermission, tz_abbrev, audience_rating,
@@ -846,14 +928,16 @@ def export_html(n_clicks, cached_html, config_data, show_title, start_time, end_
                 concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
-            html_body = generate_email_html(show_data, config)
+            html_variants = generate_email_variants(show_data, config)
         except Exception as exc:  # pragma: no cover
-            status = dbc.Alert(f"Export failed: {exc}", color="danger", dismissable=True)
+            status = status_alert(f"Export failed: {exc}", color="danger")
             return dash.no_update, dash.no_update, status
-
-    download_payload = dict(content=html_body, filename="email.html")
-    status = status or dbc.Alert("HTML exported. Check your downloads.", color="info", dismissable=True)
-    return download_payload, html_body, status
+    html_body = html_variants.get(export_mode, html_variants.get("standard"))
+    filename = build_export_filename(show_title, start_time, export_filename)
+    download_payload = dict(content=html_body, filename=filename)
+    mode_label = "Mailchimp merge-tag version" if include_mailchimp_footer else "Standard (no merge tags)"
+    status = status or status_alert(f"HTML exported ({mode_label}) as {filename}. Your browser will save it to the default downloads folder.", color="info")
+    return download_payload, html_variants, status
 
 
 @app.callback(
@@ -901,11 +985,11 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
     if not n_clicks:
         raise PreventUpdate
     if not MAILCHIMP_READY:
-        return dbc.Alert("Mailchimp credentials missing; cannot send.", color="secondary", dismissable=True)
+        return status_alert("Mailchimp credentials missing; cannot send.", color="secondary")
 
     try:
-        html_body = cached_html
-        if not html_body:
+        html_variants = ensure_variants(cached_html)
+        if not html_variants:
             show_data = build_show_data_from_inputs(show_title, start_time, end_time, doors_open,
                                                     intermission, tz_abbrev, audience_rating,
                                                     content_warnings)
@@ -916,7 +1000,7 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
                 concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
-            html_body = generate_email_html(show_data, config)
+            html_variants = generate_email_variants(show_data, config)
         else:
             config = build_config_from_inputs(
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
@@ -925,19 +1009,20 @@ def send_now(n_clicks, cached_html, config_data, show_title, start_time, end_tim
                 concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
+        html_body = html_variants.get("mailchimp", html_variants.get("standard"))
         subject = f"Upcoming Performance: {show_title}"
         from_name = config["theatre"]["name"]
         reply_to = config["details"]["contact_email"]
 
         draft = sender.create_draft_campaign(html_body, subject, from_name, reply_to)
         if not draft:
-            return dbc.Alert("Draft creation failed. Check Mailchimp credentials.", color="danger", dismissable=True)
+            return status_alert("Draft creation failed. Check Mailchimp credentials.", color="danger")
 
         if sender.send_campaign_now(draft["id"]):
-            return dbc.Alert("Campaign sent to Mailchimp.", color="success", dismissable=True)
-        return dbc.Alert("Campaign draft created but sending failed.", color="warning", dismissable=True)
+            return status_alert("Campaign sent to Mailchimp.", color="success")
+        return status_alert("Campaign draft created but sending failed.", color="warning")
     except Exception as exc:  # pragma: no cover
-        return dbc.Alert(f"Send failed: {exc}", color="danger", dismissable=True)
+        return status_alert(f"Send failed: {exc}", color="danger")
 
 
 @app.callback(
@@ -987,10 +1072,10 @@ def schedule_campaign(n_clicks, schedule_time, cached_html, config_data, show_ti
     if not n_clicks:
         raise PreventUpdate
     if not MAILCHIMP_READY:
-        return dbc.Alert("Mailchimp credentials missing; cannot schedule.", color="secondary", dismissable=True), False
+        return status_alert("Mailchimp credentials missing; cannot schedule.", color="secondary"), False
     try:
-        html_body = cached_html
-        if not html_body:
+        html_variants = ensure_variants(cached_html)
+        if not html_variants:
             show_data = build_show_data_from_inputs(show_title, start_time, end_time, doors_open,
                                                     intermission, tz_abbrev, audience_rating,
                                                     content_warnings)
@@ -1001,7 +1086,7 @@ def schedule_campaign(n_clicks, schedule_time, cached_html, config_data, show_ti
                 concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
-            html_body = generate_email_html(show_data, config)
+            html_variants = generate_email_variants(show_data, config)
         else:
             config = build_config_from_inputs(
                 config_data, theatre_name, theatre_address, theatre_phone, theatre_email,
@@ -1010,21 +1095,22 @@ def schedule_campaign(n_clicks, schedule_time, cached_html, config_data, show_ti
                 concession_description, sponsor_name, sponsor_url, whitelist_csv, blacklist_csv,
                 primary_color_hex, secondary_color_hex, headline_color_hex
             )
+        html_body = html_variants.get("mailchimp", html_variants.get("standard"))
         subject = f"Upcoming Performance: {show_title}"
         from_name = config["theatre"]["name"]
         reply_to = config["details"]["contact_email"]
 
         draft = sender.create_draft_campaign(html_body, subject, from_name, reply_to)
         if not draft:
-            return dbc.Alert("Draft creation failed. Check Mailchimp credentials.", color="danger", dismissable=True), False
+            return status_alert("Draft creation failed. Check Mailchimp credentials.", color="danger"), False
 
         schedule_time_utc = to_utc_iso(schedule_time)
         if sender.schedule_campaign(draft["id"], schedule_time_utc):
             msg = f"Campaign scheduled for {schedule_time_utc} UTC."
-            return dbc.Alert(msg, color="success", dismissable=True), False
-        return dbc.Alert("Scheduling failed after creating draft.", color="warning", dismissable=True), False
+            return status_alert(msg, color="success"), False
+        return status_alert("Scheduling failed after creating draft.", color="warning"), False
     except Exception as exc:  # pragma: no cover
-        return dbc.Alert(f"Schedule failed: {exc}", color="danger", dismissable=True), False
+        return status_alert(f"Schedule failed: {exc}", color="danger"), False
 
 
 @app.callback(
@@ -1044,9 +1130,9 @@ def load_scheduled(refresh_clicks, cancel_clicks, active_tab):
     if isinstance(triggered, dict) and triggered.get("type") == "cancel-campaign":
         campaign_id = triggered.get("index")
         if campaign_id and sender.unschedule_campaign(campaign_id):
-            status = dbc.Alert(f"Campaign {campaign_id} unscheduled.", color="success", dismissable=True)
+            status = status_alert(f"Campaign {campaign_id} unscheduled.", color="success")
         elif campaign_id:
-            status = dbc.Alert(f"Could not unschedule {campaign_id}.", color="danger", dismissable=True)
+            status = status_alert(f"Could not unschedule {campaign_id}.", color="danger")
 
     campaigns = sender.get_campaigns(status="scheduled")
     return campaign_cards(campaigns, "No scheduled campaigns yet."), status

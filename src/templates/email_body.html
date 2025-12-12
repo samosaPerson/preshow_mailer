@@ -279,6 +279,7 @@
                         </td>
                     </tr>
                     
+                    {% if context.include_mailchimp_footer %}
                     <tr>
                         <td class="container-bg" bgcolor="#efefef" style="padding: 15px 30px; font-family: {{ context.config.branding.font_family }}; font-size: 12px; color: #777777; text-align: center;">
                             Operational reminder from {{ context.config.theatre.name }}.
@@ -294,6 +295,7 @@
                             </p>
                         </td>
                     </tr>
+                    {% endif %}
                 </table>
             </td>
         </tr>
