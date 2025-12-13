@@ -2,6 +2,8 @@
 
 An open-source Python tool designed to improve the patron experience at community theatres by automatically generating polished, accurate, pre-show logistical emails.
 
+Preview a sample email: see `example.html` in the repository.
+
 ## Project Value Proposition
 
 The **Pre-Show Mailer** solves the common problem of audience members missing key logistical details (parking, weather, start time). By integrating real-time API data (Weather, Nearby Dining) and automating the generation of perfectly formatted, accessible HTML email content, the tool ensures every patron arrives informed and ready for the show.
@@ -68,6 +70,11 @@ You must have **Python 3.10+** and access to the **Google Maps Platform** and **
     ```bash
     pip install -r requirements.txt
     # (or) pip install -e .
+    ```
+4.  **Environment Setup (create .env from template):**
+    ```bash
+    cp .env.example .env
+    # Edit .env and paste your API keys
     ```
 
 ### 3. API Keys and Configuration
