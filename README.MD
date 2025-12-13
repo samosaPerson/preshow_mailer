@@ -2,7 +2,7 @@
 
 An open-source Python tool designed to improve the patron experience at community theatres by automatically generating polished, accurate, pre-show logistical emails.
 
-Preview a sample email: see `example.html` in the repository.
+Preview a sample email (rendered): https://samosaperson.github.io/preshow_mailer/index.html
 
 ## Project Value Proposition
 
