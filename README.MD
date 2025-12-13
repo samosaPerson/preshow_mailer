@@ -6,7 +6,7 @@ Preview a sample email (rendered): https://samosaperson.github.io/preshow_mailer
 
 ## Project Value Proposition
 
-The **Pre-Show Mailer** solves the common problem of audience members missing key logistical details (parking, weather, start time). By integrating real-time API data (Weather, Nearby Dining) and automating the generation of perfectly formatted, accessible HTML email content, the tool ensures every patron arrives informed and ready for the show.
+The **Pre-Show Mailer** solves the common problem of audience members missing key logistical details (parking, weather, start time). By integrating real-time API data (Weather, Nearby Dining) and automating the generation of nicely formatted, accessible HTML email content, the tool ensures every patron arrives informed and ready for the show.
 
 * **Target Audience:** Community Theatre staff, especially those utilizing ticketing systems (like Salesforce-based platforms) that handle email sending but lack dynamic content generation.
 * **Safety:** This tool **generates content only** (email.html and email.txt). It **does not** touch mailing lists or send emails (that remains the responsibility of your theatre's existing ticketing system).
