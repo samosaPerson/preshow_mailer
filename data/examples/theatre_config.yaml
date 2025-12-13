@@ -41,11 +41,11 @@ lists:
   whitelist:
     # - "Luigi's Trattoria" # Will always appear at the top
     # - "The Friendly Pub"
-    - "South Street Brewery"
+    # - "South Street Brewery" # real place near threatre only for testing
   blacklist:
     # - "Subway"            # Will never appear
     # - "Noisy Bar"
-    - "Chaps Ice Cream"
+    # - "Chaps Ice Cream" # real place near threatre only for testing
 
 # ✅ CORRECT VERSION
 business_categories:
