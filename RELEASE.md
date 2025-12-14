@@ -1,8 +1,13 @@
 # Release & macOS Packaging Guide
 
-These steps build a single-file macOS executable plus a `config` folder, then publish them with a GitHub release. Run commands from the repository root.
+These steps build the macOS `.app` bundle plus a `config` folder, then publish them with a GitHub release. Run commands from the repository root.
 
-## 1) Build the one-file macOS app
+## Branching pattern
+- Keep day-to-day work on `main`.
+- For a release: branch from `main` into `release`, cherry-pick/merge what you want, rebuild the app, and tag from `release`.
+- Rebuild the macOS app on `release` every time code/templates change so the bundle matches the branch.
+
+## 1) Build the macOS app bundle (onedir)
 ```bash
 # Confirm you're using Python 3.10+ (PyInstaller works best on 3.10/3.11)
 python3 --version
@@ -16,8 +21,8 @@ source venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt pyinstaller
 
-# Build the windowed one-file executable with bundled assets/templates/examples
-pyinstaller --clean --name preshow-mailer --onefile --windowed \
+# Build the windowed onedir app bundle with bundled assets/templates/examples
+pyinstaller --clean --strip --name preshow-mailer --onedir --windowed \
   --add-data "assets:assets" \
   --add-data "src/templates:src/templates" \
   --add-data "data/examples:data/examples" \
@@ -26,7 +31,7 @@ pyinstaller --clean --name preshow-mailer --onefile --windowed \
 
 ## 2) Prepare the distributable folder
 ```bash
-# Place configs beside the executable (required at runtime)
+# Place configs beside the app (required at runtime)
 mkdir -p dist/config
 cp data/examples/theatre_config.yaml dist/config/
 cp data/examples/show_info.json dist/config/
@@ -38,14 +43,14 @@ cp .env dist/.env
 ## 3) Smoke-test the packaged app
 ```bash
 # Start from Terminal once to confirm it opens the browser
-./dist/preshow-mailer
+open dist/preshow-mailer.app
 ```
-Then double-click `dist/preshow-mailer` in Finder to verify it opens `http://127.0.0.1:8050/` automatically.
+Then double-click `dist/preshow-mailer.app` in Finder to verify it opens `http://127.0.0.1:8050/` automatically and shuts down when the tab closes.
 
 ## 4) Zip the release asset
 ```bash
 cd dist
-zip -r ../preshow-mailer-macos.zip preshow-mailer config
+zip -r ../preshow-mailer-macos.zip preshow-mailer.app config
 cd ..
 ```
 

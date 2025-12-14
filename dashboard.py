@@ -5,8 +5,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 import os
 import re
+import sys
 import threading
+import time
 import webbrowser
+
+import requests
 
 import dash
 from dash import Dash, ALL, Input, Output, State, dcc, html
@@ -18,6 +22,7 @@ import yaml
 from src.generator import generate_email, build_context, render_email_from_context
 from src import sender
 from src.utils.runtime_paths import assets_path, default_config_paths, env_file
+from flask import request
 
 
 ENV_PATH = env_file()
@@ -29,6 +34,17 @@ MAILCHIMP_READY = all([
     os.environ.get("MAILCHIMP_SERVER_PREFIX"),
     os.environ.get("MAILCHIMP_LIST_ID")
 ])
+APP_URL = "http://127.0.0.1:8050/"
+LAST_REQUEST_TIME = time.time()
+
+
+def app_already_running(url: str = APP_URL) -> bool:
+    """Return True if an instance is already serving on the expected port."""
+    try:
+        resp = requests.get(url, timeout=1.0)
+        return resp.status_code == 200 and "Theatre Pre-Show Emailer" in resp.text
+    except Exception:
+        return False
 
 
 def load_config(path: Path = DEFAULT_CONFIG_PATH):
@@ -562,11 +578,83 @@ app.layout = dbc.Container([
         ])
     ], id="schedule-modal", is_open=False),
     dcc.Download(id="download-html"),
+    html.Script("""
+    (function() {
+      const shutdownUrl = '/_shutdown';
+      const pingUrl = '/_ping';
+      let sent = false;
+      let pingTimer = null;
+
+      function sendBeacon(url) {
+        try { navigator.sendBeacon(url); }
+        catch (e) { fetch(url, {method: 'POST', keepalive: true}).catch(() => {}); }
+      }
+
+      function sendShutdown() {
+        if (sent) return;
+        sent = true;
+        stopPings();
+        sendBeacon(shutdownUrl);
+      }
+
+      function ping() { sendBeacon(pingUrl); }
+
+      function startPings() {
+        if (pingTimer) return;
+        ping(); // immediate
+        pingTimer = setInterval(function() {
+          if (document.visibilityState === 'visible') ping();
+        }, 5000);
+      }
+
+      function stopPings() {
+        if (pingTimer) {
+          clearInterval(pingTimer);
+          pingTimer = null;
+        }
+      }
+
+      window.addEventListener('beforeunload', sendShutdown);
+      window.addEventListener('pagehide', sendShutdown);
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+          startPings();
+        } else {
+          stopPings();
+        }
+      });
+
+      startPings();
+    })();
+    """)
 ], fluid=True, className="pb-4", style={
     "background": "#0f0f10",   # App shell background behind cards
     "minHeight": "100vh",      # Ensure full-height backdrop
     "color": "#f8f9fa"         # Default text color on shell
 })
+
+
+@app.server.route("/_shutdown", methods=["POST"])
+def shutdown_server():  # pragma: no cover - lifecycle helper
+    """Allow the browser tab to shut down the local server when closing."""
+    func = request.environ.get("werkzeug.server.shutdown")
+    if func:
+        func()
+    else:
+        os._exit(0)
+    return "Server shutting down", 200
+
+
+@app.server.before_request
+def _touch_last_request():  # pragma: no cover - lifecycle helper
+    global LAST_REQUEST_TIME
+    LAST_REQUEST_TIME = time.time()
+
+
+@app.server.route("/_ping", methods=["GET", "POST"])
+def ping():  # pragma: no cover - lifecycle helper
+    """Heartbeat endpoint to keep the server alive while the tab is open."""
+    return "ok", 200
 
 
 @app.callback(
@@ -1175,9 +1263,27 @@ def show_sent_preview(clicks):
 
 
 if __name__ == "__main__":
+    def start_idle_monitor(timeout_seconds=15):
+        """Exit the server if no requests arrive within timeout_seconds."""
+        def _monitor():
+            while True:
+                time.sleep(5)
+                if time.time() - LAST_REQUEST_TIME > timeout_seconds:
+                    os._exit(0)
+        t = threading.Thread(target=_monitor, daemon=True)
+        t.start()
+
+    start_idle_monitor()
+
+    # If an instance is already running, just open the tab and exit.
+    if app_already_running():
+        if not os.environ.get("PRESHOW_MAILER_NO_BROWSER"):
+            webbrowser.open(APP_URL)
+        sys.exit(0)
+
     # Dash dev tools rely on deprecated pkgutil APIs in newer Python; keep debug off for compatibility.
     def _open_browser():
-        webbrowser.open("http://127.0.0.1:8050/")
+        webbrowser.open(APP_URL)
 
     if not os.environ.get("PRESHOW_MAILER_NO_BROWSER"):
         threading.Timer(1.0, _open_browser).start()

@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Iterable, Optional
 
 
 # Resolve the repository root when running from source; fall back to the
@@ -30,12 +30,46 @@ def user_dir() -> Path:
     return _source_root()
 
 
+def _candidate_roots() -> Iterable[Path]:
+    """
+    Search roots for user-provided files when frozen:
+    - Executable directory
+    - Its parent chain (captures ../.. to reach the dist folder when inside a .app)
+    - Bundled dir (PyInstaller _MEIPASS)
+    """
+    if getattr(sys, "frozen", False):
+        exec_path = Path(sys.executable).resolve()
+        roots = [exec_path.parent] + list(exec_path.parents)
+    else:
+        roots = [_source_root()]
+
+    roots.append(bundle_dir())
+
+    seen = set()
+    for root in roots:
+        if root in seen:
+            continue
+        seen.add(root)
+        yield root
+
+
+def _find_nearby(target: str, is_dir: bool = False) -> Optional[Path]:
+    for root in _candidate_roots():
+        candidate = root / target
+        if is_dir and candidate.is_dir():
+            return candidate
+        if not is_dir and candidate.is_file():
+            return candidate
+    return None
+
+
 def default_config_dir() -> Path:
     """
-    Prefer a top-level config directory beside the executable; fall back to bundled examples.
+    Prefer a top-level config directory near the executable (.app parent included);
+    fall back to bundled examples.
     """
-    candidate = user_dir() / "config"
-    if candidate.exists():
+    candidate = _find_nearby("config", is_dir=True)
+    if candidate:
         return candidate
     return bundle_dir() / "data" / "examples"
 
@@ -50,10 +84,9 @@ def default_config_paths():
 
 def env_file() -> Optional[Path]:
     """
-    Return the .env path beside the executable (or repo root) if present.
+    Return the nearest .env (searches executable dir, its parents, then bundled root).
     """
-    candidate = user_dir() / ".env"
-    return candidate if candidate.exists() else None
+    return _find_nearby(".env", is_dir=False)
 
 
 def assets_path() -> Path:
@@ -63,4 +96,7 @@ def assets_path() -> Path:
     bundled = bundle_dir() / "assets"
     if bundled.exists():
         return bundled
+    nearby = _find_nearby("assets", is_dir=True)
+    if nearby:
+        return nearby
     return user_dir() / "assets"
