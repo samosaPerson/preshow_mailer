@@ -1,17 +1,25 @@
-# Python specific files
+# Python
 __pycache__/
-*.pyc
-.env
-/venv/
-.DS_Store
-keys.py
-
-# Python build and metadata
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
 *.egg-info/
-*.dist-info/
+*.eggs/
 build/
 
-# Output files
-/output/
-email.html
-email.txt
+# Virtualenv
+venv/
+.env
+
+# Local data and cache
+*.log
+*.sqlite3
+
+# OS junk
+.DS_Store
+
+# Release/build artifacts
+/dist/
+/*.zip
+
