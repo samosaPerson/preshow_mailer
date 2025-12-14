@@ -70,3 +70,11 @@ Finalize the GitHub release in the browser:
 1. Open the repo → Releases → “Draft a new release”.
 2. Choose the tag `v0.1.0` (or your version), target branch `release`.
 3. Title/describe the release, attach `preshow-mailer-macos.zip`, and publish.
+
+## If macOS blocks the downloaded app (quarantine)
+Unsigned apps from GitHub are quarantined. Tell users to clear the quarantine flag after unzipping:
+```bash
+xattr -dr com.apple.quarantine /path/to/preshow-mailer.app
+open /path/to/preshow-mailer.app
+```
+If Finder still warns, Control-click → Open → Open. For frictionless installs, sign and notarize with an Apple Developer ID before publishing.

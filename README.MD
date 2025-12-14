@@ -117,3 +117,11 @@ This project is licensed under the **MIT License** and is open to contributions.
 ## Packaging & Release
 
 For the macOS one-file build and GitHub release checklist, see `RELEASE.md`.
+
+### If macOS blocks the downloaded app
+After you download/unzip the release from GitHub, macOS may quarantine the `.app` because it is unsigned. To run it:
+```bash
+xattr -dr com.apple.quarantine /path/to/preshow-mailer.app
+open /path/to/preshow-mailer.app
+```
+If Finder still warns, Control-click the app → Open → Open. For user-friendly distribution without these steps, sign and notarize the app with an Apple Developer ID before publishing.
