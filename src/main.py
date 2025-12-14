@@ -9,9 +9,12 @@ import yaml
 
 from src.generator import build_context, render_email_from_context
 from src.sender import create_draft_campaign, send_campaign_now, schedule_campaign
+from src.utils.runtime_paths import default_config_paths, env_file
 
 
-load_dotenv()
+ENV_PATH = env_file()
+load_dotenv(ENV_PATH)
+DEFAULT_CONFIG_PATH, DEFAULT_SHOW_PATH = default_config_paths()
 
 
 def build_export_filename(show_title, start_time, provided=None):
@@ -38,8 +41,8 @@ def generate_variants(theatre_config, show_info):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate or upload pre-show emails (CLI).")
-    parser.add_argument("--config", default="data/examples/theatre_config.yaml", help="Theatre config file")
-    parser.add_argument("--show", default="data/examples/show_info.json", help="Show info file")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG_PATH), help="Theatre config file")
+    parser.add_argument("--show", default=str(DEFAULT_SHOW_PATH), help="Show info file")
     parser.add_argument("--action", choices=["generate", "upload"], default="generate",
                         help='Generate local HTML/TXT or upload to Mailchimp (requires keys).')
     parser.add_argument("--mode", choices=["draft", "send", "schedule"], default="draft",

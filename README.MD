@@ -113,3 +113,7 @@ This project is licensed under the **MIT License** and is open to contributions.
 
 * **Author:** samosaPerson
 * **Version:** 0.1.0 (Initial Release)
+
+## Packaging & Release
+
+For the macOS one-file build and GitHub release checklist, see `RELEASE.md`.

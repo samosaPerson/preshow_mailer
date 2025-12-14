@@ -5,8 +5,10 @@ import mailchimp_marketing as MailchimpMarketing
 from dotenv import load_dotenv
 from mailchimp_marketing.api_client import ApiClientError
 
+from src.utils.runtime_paths import env_file
 
-load_dotenv()
+ENV_PATH = env_file()
+load_dotenv(ENV_PATH)
 
 
 def _get_client():

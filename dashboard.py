@@ -1,10 +1,12 @@
+import base64
+import io
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-import base64
-import io
 import os
 import re
+import threading
+import webbrowser
 
 import dash
 from dash import Dash, ALL, Input, Output, State, dcc, html
@@ -15,13 +17,13 @@ import yaml
 
 from src.generator import generate_email, build_context, render_email_from_context
 from src import sender
+from src.utils.runtime_paths import assets_path, default_config_paths, env_file
 
 
-load_dotenv()
-
-ROOT_DIR = Path(__file__).resolve().parent
-DEFAULT_CONFIG_PATH = ROOT_DIR / "data" / "examples" / "theatre_config.yaml"
-DEFAULT_SHOW_PATH = ROOT_DIR / "data" / "examples" / "show_info.json"
+ENV_PATH = env_file()
+load_dotenv(ENV_PATH)
+DEFAULT_CONFIG_PATH, DEFAULT_SHOW_PATH = default_config_paths()
+ASSETS_DIR = assets_path()
 MAILCHIMP_READY = all([
     os.environ.get("MAILCHIMP_API_KEY"),
     os.environ.get("MAILCHIMP_SERVER_PREFIX"),
@@ -274,6 +276,7 @@ config_defaults = load_config()
 
 app = Dash(
     __name__,
+    assets_folder=str(ASSETS_DIR),
     external_stylesheets=[dbc.themes.MORPH, dbc.icons.BOOTSTRAP],
     title="Theatre Pre-Show Emailer",
     suppress_callback_exceptions=True
@@ -1173,4 +1176,10 @@ def show_sent_preview(clicks):
 
 if __name__ == "__main__":
     # Dash dev tools rely on deprecated pkgutil APIs in newer Python; keep debug off for compatibility.
-    app.run_server(debug=False)
+    def _open_browser():
+        webbrowser.open("http://127.0.0.1:8050/")
+
+    if not os.environ.get("PRESHOW_MAILER_NO_BROWSER"):
+        threading.Timer(1.0, _open_browser).start()
+
+    app.run_server(debug=False, host="127.0.0.1", port=8050)
