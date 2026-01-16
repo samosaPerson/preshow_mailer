@@ -22,9 +22,24 @@ Two options:
    - Open `http://127.0.0.1:8050/` in your browser.
    - Edit **Show Details** and **Theatre Details** directly in the UI.
    - Use **Generate Preview** to see live HTML (light/dark + mobile/desktop toggles).
+   - Use **Copy HTML** if you plan to paste directly into a webmail editor (Gmail/Outlook "Edit as HTML").
    - Export HTML, Send Now, or Schedule (Mailchimp creds required; Send/Schedule buttons auto-disable if missing).
    - Load starter files: upload theatre YAML or show JSON from the UI.
    - Manage scheduled/sent campaigns from tabs (archive accuracy depends on using Mailchimp).
+
+### Paste Into Webmail ("Edit as HTML" via Inspect Element)
+
+If your email client doesn't accept file uploads and you need to paste HTML directly:
+
+1) In the dashboard, click **Copy HTML**.
+2) Open your email draft in the browser (Gmail/Outlook web).
+3) Right-click inside the message body → **Inspect**.
+4) In DevTools, select the message body container, then right-click it → **Edit as HTML**.
+5) Paste the copied HTML and close DevTools.
+
+Notes:
+- The copied HTML is a fragment (no `<html>`, `<head>`, or `<body>`), which is required for "Edit as HTML".
+- If the layout looks narrow, increase the compose window width before pasting.
 
 2) **CLI (legacy)**
    - Place show data: `data/examples/show_info.json`
