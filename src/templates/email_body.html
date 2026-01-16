@@ -13,7 +13,7 @@
         img { -ms-interpolation-mode: bicubic; }
         
         /* MOBILE STYLES */
-        @media screen and (max-width: 600px) {
+        @media screen and (max-width: 700px), screen and (max-device-width: 700px) {
             .mobile-stack {
                 display: block !important;
                 width: 100% !important;
@@ -32,7 +32,7 @@
             }
         }
 
-        /* DARK MODE STYLES */
+        /* DARK MODE START */
         @media (prefers-color-scheme: dark) {
             body, .body-bg {
                 background-color: #121212 !important;
@@ -45,7 +45,6 @@
             h1, h2, h3, h4, p, li, div {
                 color: #E0E0E0 !important;
             }
-            /* Exclude spans from global override so badges work, handle them separately if needed */
             
             .dark-mode-text-inverse {
                 color: #121212 !important;
@@ -57,7 +56,19 @@
             }
             /* Force specific backgrounds for bubbles to ensure contrast */
             .weather-bubble {
-                filter: brightness(0.8);
+                filter: none !important;
+            }
+            .weather-bubble-day {
+                background-color: #E0F7FA !important;
+                background: #E0F7FA !important;
+                background-image: linear-gradient(#E0F7FA, #E0F7FA) !important;
+                background-size: 100% 100% !important;
+            }
+            .weather-bubble-night {
+                background-color: #1A237E !important;
+                background: #1A237E !important;
+                background-image: linear-gradient(#1A237E, #1A237E) !important;
+                background-size: 100% 100% !important;
             }
             .sponsor-badge {
                 color: #FFFFFF !important;
@@ -73,6 +84,7 @@
                 color: #90CAF9 !important;
             }
         }
+        /* DARK MODE END */
     </style>
 </head>
 <body class="body-bg" style="margin: 0; padding: 0; background-color: {{ context.config.branding.secondary_color }};">
@@ -83,10 +95,9 @@
                 <table class="container-bg" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 600px; width: 100%;">
                     
                     <tr>
-                        <td align="center" bgcolor="{{ context.config.branding.primary_color }}" style="padding: 20px 20px;">
-                            
-                            {% if context.config.branding.logo_url %}
-                                <img src="{{ context.config.branding.logo_url }}" alt="{{ context.config.theatre.name }}" width="150" style="display: block; border: 0; margin-bottom: 15px; max-width: 100%; height: auto;">
+                        <td align="center" bgcolor="{{ context.config.branding.primary_color }}" style="padding: 20px 20px; background-color: {{ context.config.branding.primary_color }}; background: {{ context.config.branding.primary_color }};">
+                            {% if context.config.branding.logo_src %}
+                                <img src="{{ context.config.branding.logo_src }}" alt="{{ context.config.theatre.name }}" width="150" style="display: block; border: 0; margin: 0 auto 15px; max-width: 150px; width: 150px; height: auto;">
                             {% endif %}
                             
                             <h1 style="font-family: {{ context.config.branding.font_family }}; color: #ffffff; margin: 0; font-size: 26px; line-height: 1.2;">
@@ -99,75 +110,78 @@
                     </tr>
 
                     <tr>
-                        <td style="padding: 30px;">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                    <td class="mobile-stack mobile-padding-bottom" width="40%" valign="top" style="padding-right: 15px;">
-                                        <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0; margin-bottom: 15px;">
-                                            Weather
-                                        </h3>
-                                        
-                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 15px;">
-                                            <tr>
-                                                <td width="80">
-                                                    {% set bg_color = '#E0F7FA' if context.weather.arrival.is_day else '#1A237E' %}
-                                                    <div class="weather-bubble" style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
-                                                        {{ context.weather.arrival.icon }}
-                                                    </div>
-                                                </td>
-                                                <td style="padding-left: 15px; vertical-align: middle;">
-                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 12px; text-transform: uppercase; color: #777777; font-weight: bold;">
-                                                        Arrival
-                                                    </div>
-                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 32px; color: #222222; font-weight: bold; line-height: 1;">
-                                                        {{ context.weather.arrival.temp }}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-
-                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                            <tr>
-                                                <td width="80">
-                                                    {% set bg_color = '#E0F7FA' if context.weather.departure.is_day else '#1A237E' %}
-                                                    <div class="weather-bubble" style="background-color: {{ bg_color }}; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
-                                                        {{ context.weather.departure.icon }}
-                                                    </div>
-                                                </td>
-                                                <td style="padding-left: 15px; vertical-align: middle;">
-                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 12px; text-transform: uppercase; color: #777777; font-weight: bold;">
-                                                        Departure
-                                                    </div>
-                                                    <div style="font-family: {{ context.config.branding.font_family }}; font-size: 32px; color: #222222; font-weight: bold; line-height: 1;">
-                                                        {{ context.weather.departure.temp }}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
+                        <td style="padding: 30px; font-size: 0; text-align: left;" align="left">
+                            
+                            <div style="display: inline-block; width: 100%; max-width: 210px; vertical-align: top; margin-bottom: 20px;">
+                                <div style="padding-right: 15px; box-sizing: border-box; text-align: left;">
+                                    <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0; margin-bottom: 15px;">
+                                        Weather
+                                    </h3>
                                     
-                                    <td class="mobile-stack" width="60%" valign="top" style="padding-left: 10px;">
-                                        <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
-                                            Address & Timing
-                                        </h3>
-                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 16px; line-height: 24px; margin: 0;">
-                                            <strong>Address:</strong> {{ context.config.theatre.name }}, {{ context.config.theatre.address }}<br/><br/>
-                                            
-                                            {% if context.config.details.parking_notes %}
-                                                <strong>Parking:</strong> {{ context.config.details.parking_notes }}<br/><br/>
-                                            {% endif %}
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 15px;">
+                                        <tr>
+                                            <td width="80">
+                                                {% set arrival_is_day = context.weather.arrival.is_day %}
+                                                {% set bg_color = '#E0F7FA' if arrival_is_day else '#1A237E' %}
+                                                <div class="weather-bubble {% if arrival_is_day %}weather-bubble-day{% else %}weather-bubble-night{% endif %}" style="background-color: {{ bg_color }}; background: {{ bg_color }}; background-image: linear-gradient({{ bg_color }}, {{ bg_color }}); background-size: 100% 100%; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
+                                                    {{ context.weather.arrival.icon }}
+                                                </div>
+                                            </td>
+                                            <td style="padding-left: 15px; vertical-align: middle;">
+                                                <div style="font-family: {{ context.config.branding.font_family }}; font-size: 12px; text-transform: uppercase; color: #777777; font-weight: bold;">
+                                                    Arrival
+                                                </div>
+                                                <div style="font-family: {{ context.config.branding.font_family }}; font-size: 32px; color: #222222; font-weight: bold; line-height: 1;">
+                                                    {{ context.weather.arrival.temp }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
 
-                                            <strong>Doors Open:</strong> {{ context.show_info.doors_open_time | simple_time }}<br/> 
-                                            <strong>Start Time:</strong> {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}<br/>
-                                            <strong>End Time:</strong> {{ context.show_info.end_time | simple_time }} ({{ context.show_info.end_time | runtime(context.show_info.start_time) }})<br/>
-                                            
-                                            {% if context.show_info.intermission_description %}
-                                                <strong>Intermission:</strong> {{ context.show_info.intermission_description }}
-                                            {% endif %}
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td width="80">
+                                                {% set departure_is_day = context.weather.departure.is_day %}
+                                                {% set bg_color = '#E0F7FA' if departure_is_day else '#1A237E' %}
+                                                <div class="weather-bubble {% if departure_is_day %}weather-bubble-day{% else %}weather-bubble-night{% endif %}" style="background-color: {{ bg_color }}; background: {{ bg_color }}; background-image: linear-gradient({{ bg_color }}, {{ bg_color }}); background-size: 100% 100%; border-radius: 12px; width: 80px; height: 80px; line-height: 80px; text-align: center; font-size: 52px;">
+                                                    {{ context.weather.departure.icon }}
+                                                </div>
+                                            </td>
+                                            <td style="padding-left: 15px; vertical-align: middle;">
+                                                <div style="font-family: {{ context.config.branding.font_family }}; font-size: 12px; text-transform: uppercase; color: #777777; font-weight: bold;">
+                                                    Departure
+                                                </div>
+                                                <div style="font-family: {{ context.config.branding.font_family }}; font-size: 32px; color: #222222; font-weight: bold; line-height: 1;">
+                                                    {{ context.weather.departure.temp }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div style="display: inline-block; width: 100%; max-width: 320px; vertical-align: top;">
+                                <div style="padding-left: 10px; box-sizing: border-box; text-align: left;">
+                                    <h3 class="branding-text" style="font-family: {{ context.config.branding.font_family }}; color: {{ context.config.branding.headline_color }}; font-size: 20px; margin-top: 0;">
+                                        Address & Timing
+                                    </h3>
+                                    <p style="font-family: {{ context.config.branding.font_family }}; font-size: 16px; line-height: 24px; margin: 0;">
+                                        <strong>Address:</strong> {{ context.config.theatre.name }}, {{ context.config.theatre.address }}<br/><br/>
+                                        
+                                        {% if context.config.details.parking_notes %}
+                                            <strong>Parking:</strong> {{ context.config.details.parking_notes }}<br/><br/>
+                                        {% endif %}
+
+                                        <strong>Doors Open:</strong> {{ context.show_info.doors_open_time | simple_time }}<br/> 
+                                        <strong>Start Time:</strong> {{ context.show_info.start_time | format_date }} {{ context.show_info.timezone_abbreviation }}<br/>
+                                        <strong>End Time:</strong> {{ context.show_info.end_time | simple_time }} ({{ context.show_info.end_time | runtime(context.show_info.start_time) }})<br/>
+                                        
+                                        {% if context.show_info.intermission_description %}
+                                            <strong>Intermission:</strong> {{ context.show_info.intermission_description }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
                         </td>
                     </tr>
 
@@ -225,6 +239,9 @@
                                                 ℹ️ <strong>Rules:</strong> {{ context.config.details.house_rules }} 
                                             {% endif %}
                                             Questions? Call <strong>{{ context.config.details.contact_phone }}</strong>.
+                                        </p>
+                                        <p style="font-family: {{ context.config.branding.font_family }}; font-size: 16px; line-height: 22px; margin: 10px 0 0 0; font-weight: bold;">
+                                            If your plans have changed, please let us know.
                                         </p>
                                     </td>
                                 </tr>

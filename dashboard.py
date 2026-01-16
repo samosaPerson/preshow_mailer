@@ -120,16 +120,40 @@ def normalize_hex(val):
 
 def generate_email_html(show_data, config, include_mailchimp_footer=True):
     ctx = build_context(config, show_data)
-    html_body, _ = render_email_from_context(ctx, include_mailchimp_footer=include_mailchimp_footer)
+    embed_logo = not include_mailchimp_footer
+    strip_dark_mode = not include_mailchimp_footer
+    html_body, _ = render_email_from_context(
+        ctx,
+        include_mailchimp_footer=include_mailchimp_footer,
+        embed_logo=embed_logo,
+        strip_dark_mode=strip_dark_mode
+    )
     return html_body
 
 
 def generate_email_variants(show_data, config):
     """Generate both standard and Mailchimp versions using a single data fetch."""
     ctx = build_context(config, show_data)
-    html_mailchimp, _ = render_email_from_context(ctx, include_mailchimp_footer=True)
-    html_standard, _ = render_email_from_context(ctx, include_mailchimp_footer=False)
-    return {"mailchimp": html_mailchimp, "standard": html_standard}
+    html_mailchimp, _ = render_email_from_context(
+        ctx,
+        include_mailchimp_footer=True,
+        embed_logo=False,
+        strip_dark_mode=False
+    )
+    html_standard, _ = render_email_from_context(
+        ctx,
+        include_mailchimp_footer=False,
+        embed_logo=True,
+        strip_dark_mode=True
+    )
+    html_fragment, _ = render_email_from_context(
+        ctx,
+        include_mailchimp_footer=False,
+        embed_logo=False,
+        strip_dark_mode=True,
+        fragment_mode=True
+    )
+    return {"mailchimp": html_mailchimp, "standard": html_standard, "fragment": html_fragment}
 
 
 def now_hms():
@@ -160,6 +184,21 @@ def build_export_filename(show_title, start_time, provided_name=None):
 def ensure_variants(cached):
     """Return cached variants dict if valid, else None."""
     return cached if isinstance(cached, dict) else None
+
+
+def build_html_fragment(html_body):
+    if not html_body:
+        return ""
+    body_match = re.search(r"<body[^>]*>", html_body, re.IGNORECASE)
+    if body_match:
+        body_content = html_body[body_match.end():]
+        end_match = re.search(r"</body>", body_content, re.IGNORECASE)
+        if end_match:
+            body_content = body_content[:end_match.start()]
+    else:
+        body_content = html_body
+    body_content = body_content.strip()
+    return f"<div>{body_content}</div>"
 
 
 def apply_preview_overrides(html_body, theme_mode):
@@ -287,9 +326,9 @@ hero = dbc.Row([
                className="text-white-50 mb-0")
     ])
 ], className="p-4 rounded-3", style={
-    "background": "linear-gradient(120deg, #144550 0%, #165264 50%, #103b49 100%)",  # Header banner gradient
-    "boxShadow": "0 14px 40px rgba(6,12,26,0.35)",                                   # Depth under banner
-    "border": "1px solid #1e2e4d"                                                    # Edge line around hero
+    "background": "#3b3b3b",                    # Grey header banner
+    "boxShadow": "0 14px 40px rgba(0,0,0,0.35)", # Depth under banner
+    "border": "1px solid #4b4b4b"               # Edge line around hero
 })
 
 
@@ -422,6 +461,25 @@ def editor_tab():
     actions = dbc.Row([
         dbc.Col(dbc.Button("Generate Preview", id="preview-btn", color="primary", className="w-100 action-btn")),
         dbc.Col(dbc.Button("Export HTML", id="export-btn", color="light", className="w-100 action-btn")),
+        dbc.Col(
+            html.Div([
+                dbc.Button("Copy HTML", id="copy-html-btn", color="light", className="w-100 action-btn copy-html-btn"),
+                dcc.Clipboard(
+                    id="copy-html",
+                    content="",
+                    title="Copy HTML for Edit as HTML",
+                    className="copy-html-overlay",
+                    style={
+                        "position": "absolute",
+                        "inset": "0",
+                        "width": "100%",
+                        "height": "100%",
+                        "opacity": 0,
+                        "cursor": "pointer"
+                    }
+                ),
+            ], className="position-relative copy-html-wrapper")
+        ),
         dbc.Col(dbc.Button("Send Now", id="send-btn", color="success", className="w-100 action-btn", disabled=not MAILCHIMP_READY)),
         dbc.Col(dbc.Button("Schedule", id="schedule-btn", color="warning", className="w-100 text-dark action-btn", disabled=not MAILCHIMP_READY))
     ], className="g-2 mb-2")
@@ -862,6 +920,19 @@ def generate_preview(n_clicks, export_mode, theme_mode, viewport_mode, cached_ht
     except Exception as exc:  # pragma: no cover - UI feedback path
         status = status_alert(f"Could not generate preview: {exc}", color="danger")
         return dash.no_update, dash.no_update, status, dash.no_update
+
+
+@app.callback(
+    Output("copy-html", "content"),
+    Input("generated-html", "data"),
+    Input("export-mode", "value")
+)
+def update_copy_html(cached_html, export_mode):
+    html_variants = ensure_variants(cached_html)
+    if not html_variants:
+        return ""
+    html_body = html_variants.get("fragment") or html_variants.get(export_mode, html_variants.get("standard"))
+    return build_html_fragment(html_body)
 
 
 @app.callback(

@@ -1,16 +1,17 @@
 /* Global palette and sizing tokens for the dashboard UI */
 :root {
-    --bg: #203542;            /* Page background gradient anchor: deep blue-green */
-    --panel: #122836;         /* Default card background for dark panels */
-    --panel-alt: #193647;     /* Alternate panel fill for contrast (lists/uploads) */
-    --text: #e9f2f2;          /* Primary text on dark surfaces */
-    --muted: #b1c3c8;         /* Secondary labels, helper text */
-    --accent: #2e9a8f;        /* Main action color for CTAs and active states */
-    --accent-dark: #278579;   /* Hover state for accent actions */
-    --accent-darker: #206d63; /* Pressed/active state for accent actions */
-    --border: #23414f;        /* Default border lines on panels */
-    --surface: #1f303b;       /* Neutral surface for inputs and nav */
-    --shadow: 0 16px 45px rgba(10, 24, 32, 0.32); /* Card drop shadow depth */
+    --bg: #2d2a2e;            /* Page background gradient anchor: Monokai Dimmed base */
+    --panel: #313036;         /* Default card background for dark panels */
+    --panel-alt: #3a3941;     /* Alternate panel fill for contrast (lists/uploads) */
+    --shell-bg: #1f1c25;      /* App shell backdrop lighter than panels */
+    --text: #f8f8f2;          /* Primary text on dark surfaces */
+    --muted: #8f8f7a;         /* Secondary labels, helper text */
+    --accent: #a6e22e;        /* Main action color for CTAs and active states */
+    --accent-dark: #95c52a;   /* Hover state for accent actions */
+    --accent-darker: #7faf24; /* Pressed/active state for accent actions */
+    --border: #45424c;        /* Default border lines on panels */
+    --surface: #34323a;       /* Neutral surface for inputs and nav */
+    --shadow: 0 16px 45px rgba(12, 11, 14, 0.45); /* Card drop shadow depth */
     --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; /* Base font stack */
 }
 
@@ -18,7 +19,7 @@
 
 body, .body-bg {
     /* Core app background with subtle radial spotlight; keeps copy legible on dark base */
-    background: radial-gradient(circle at 20% 20%, #1a3645 0%, var(--bg) 45%, #0d1c26 100%);
+    background: radial-gradient(circle at 20% 20%, #3a3840 0%, var(--bg) 45%, #222024 100%);
     color: var(--text);
     font-family: var(--font-body);
 }
@@ -47,9 +48,9 @@ body, .body-bg {
 .card-body { color: var(--text); }
 
 .form-control, .form-control:focus, .dash-textarea, textarea {
-    background-color: #123141;          /* Input background on dark UI */
-    color: #e6ecff;                     /* Input text color */
-    border: 1px solid #24365a;          /* Input border for separation */
+    background-color: #3a3840;          /* Input background on dark UI */
+    color: #f8f8f2;                     /* Input text color */
+    border: 1px solid #4f4b56;          /* Input border for separation */
     box-shadow: none;
     border-radius: 8px;                 /* Input rounding */
     padding: 0.4rem 0.6rem;             /* Input padding for touch targets */
@@ -58,26 +59,28 @@ body, .body-bg {
 
 .form-control:focus {
     border-color: var(--accent);        /* Accent focus ring color */
-    box-shadow: 0 0 0 1px rgba(31,94,255,0.35); /* Glow to signal focus */
+    box-shadow: 0 0 0 1px rgba(166,226,46,0.45); /* Glow to signal focus */
 }
 
 .form-control-color {
     padding: 0.15rem 0.4rem;            /* Compact padding for color swatch */
     height: 2rem;                       /* Aligns with text inputs */
-    background: #123141;
-    border: 1px solid #2b4c59;          /* Dark border around color picker */
+    width: 3rem;                        /* Narrower swatch preview */
+    min-width: 3rem;
+    background: #3a3840;
+    border: 1px solid #4f4b56;          /* Dark border around color picker */
     border-radius: 8px;
 }
 .hex-input {
-    background: #123141 !important;
-    color: #f5f7ff !important;
-    border-color: #2b4c59 !important;
+    background: #3a3840 !important;
+    color: #f8f8f2 !important;
+    border-color: #4f4b56 !important;
     padding: 0.4rem 0.6rem !important;  /* Aligns hex inputs with text fields */
 }
 
 .upload-box {
     background-color: var(--panel-alt); /* Dropzone background */
-    border: 1px dashed #2d5562;         /* Dashed border hinting drag-drop */
+    border: 1px dashed #5a575f;         /* Dashed border hinting drag-drop */
     color: var(--muted);                /* Instructional copy color */
     text-align: center;
     cursor: pointer;
@@ -89,31 +92,41 @@ body, .body-bg {
 }
 
 .action-btn {
-    background: linear-gradient(135deg, #38b09f, #2e9a8f); /* Primary CTA gradient */
-    border: 1px solid #2a8a7f;                            /* CTA border for definition */
-    color: #eaf6f6;                                       /* CTA text color */
+    background: linear-gradient(135deg, #b4ea4e, #a6e22e); /* Primary CTA gradient */
+    border: 1px solid #8fbe27;                            /* CTA border for definition */
+    color: #1f2a14;                                       /* CTA text color */
     border-radius: 8px;                                   /* CTA rounding */
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #2fa190, #28887e); /* Hover gradient step */
-    color: #eaf6f6;
+    background: linear-gradient(135deg, #9edc3a, #8fc930); /* Hover gradient step */
+    color: #1f2a14;
 }
 
 .action-btn:active, .action-btn:focus {
-    background: #24756d;              /* Pressed CTA background */
-    color: #eaf6f6;
+    background: #7fb522;              /* Pressed CTA background */
+    color: #1f2a14;
+}
+
+.copy-html-wrapper:hover .copy-html-btn {
+    background: linear-gradient(135deg, #9edc3a, #8fc930); /* Mirror action hover */
+    color: #1f2a14;
+}
+.copy-html-wrapper:active .copy-html-btn,
+.copy-html-wrapper:focus-within .copy-html-btn {
+    background: #7fb522;              /* Mirror action pressed */
+    color: #1f2a14;
 }
 
 .secondary-btn {
-    background: #1d3642;              /* Secondary action background */
-    color: #d7efef;                   /* Secondary text color */
-    border: 1px solid #2b545f;        /* Secondary border */
+    background: #3a383f;              /* Secondary action background */
+    color: #d6d6c2;                   /* Secondary text color */
+    border: 1px solid #5a555f;        /* Secondary border */
     border-radius: 8px;
 }
 
 .secondary-btn:hover {
-    background: #1a303a;              /* Darken on hover for secondary buttons */
+    background: #45424b;              /* Darken on hover for secondary buttons */
 }
 
 .toggle-group label {
@@ -122,8 +135,8 @@ body, .body-bg {
     margin-right: 8px;
     padding: 8px 14px;                        /* Clickable padding for radio items */
     border-radius: 12px;                      /* Pill-like radio containers */
-    border: 1px solid #24365a;                /* Outline for unselected toggles */
-    background: #0f1b35;                      /* Base fill for radio labels */
+    border: 1px solid #4b4652;                /* Outline for unselected toggles */
+    background: #332f36;                      /* Base fill for radio labels */
     color: var(--muted);
     cursor: pointer;
     user-select: none;
@@ -136,7 +149,7 @@ body, .body-bg {
     width: 14px;                              /* Custom radio size */
     height: 14px;
     border-radius: 50%;
-    border: 2px solid #2d4066;                /* Ring for unchecked radio */
+    border: 2px solid #5b5666;                /* Ring for unchecked radio */
     background: transparent;
     position: relative;
     accent-color: var(--accent);              /* Accent dot when checked */
@@ -148,20 +161,20 @@ body, .body-bg {
 }
 
 .toggle-group label:has(input:checked) {
-    background: #1e4f59;                      /* Selected radio label fill */
-    color: #eaf0ff;                           /* Selected label text color */
+    background: #3d4a2c;                      /* Selected radio label fill */
+    color: #f8f8f2;                           /* Selected label text color */
     border-color: var(--accent);              /* Selected label outline */
 }
 
 .toggle-group label:hover {
-    background: #122852;                      /* Hover affordance for radios */
+    background: #3a3640;                      /* Hover affordance for radios */
 }
 
 /* Tabs */
 .nav-tabs {
-    border-bottom: 1px solid #1b2946 !important; /* Divider under tab bar */
+    border-bottom: 1px solid #46424e !important; /* Divider under tab bar */
     box-shadow: none !important;
-    background: #122c38;                         /* Tab bar fill */
+    background: #323038;                         /* Tab bar fill */
     border-radius: 10px 10px 0 0;                /* Round top corners of tab set */
 }
 .nav-tabs .nav-link {
@@ -171,8 +184,8 @@ body, .body-bg {
     box-shadow: none !important;
 }
 .nav-tabs .nav-link.active {
-    color: #eaf0ff !important;                   /* Active tab text */
-    background: #0f1d3a !important;              /* Active tab fill */
+    color: #f8f8f2 !important;                   /* Active tab text */
+    background: #3a3840 !important;              /* Active tab fill */
     border: 0 !important;
     border-bottom: 2px solid var(--accent) !important; /* Accent underline for active tab */
     box-shadow: none !important;
@@ -187,30 +200,25 @@ body, .body-bg {
 }
 
 .list-group-item-action:hover {
-    background-color: #1c3746;          /* Hover background for selectable lists */
-    color: #fff;
-}
-.hex-input {
-    background: #0f1b35 !important;     /* Hex field dark fill */
-    color: #f7f9ff !important;          /* Hex field text */
-    border-color: #2f4a7a !important;   /* Hex field outline */
+    background-color: #3a383f;          /* Hover background for selectable lists */
+    color: #f8f8f2;
 }
 
 /* Status alerts (preview/export/send feedback) */
 .status-alert {
-    color: #ffffff !important;
+    color: #f8f8f2 !important;
 }
 .status-alert.alert-success {
-    background-color: #1f4f36 !important;  /* Green success */
-    border: 1px solid #193d2c !important;
+    background-color: #3f5b2b !important;  /* Green success */
+    border: 1px solid #2f3c1e !important;
 }
 .status-alert.alert-info {
-    background-color: #7358d0 !important;  /* Lightened purple info */
-    border: 1px solid #5c46a6 !important;
+    background-color: #2b4f57 !important;  /* Cyan info */
+    border: 1px solid #233f44 !important;
 }
 .status-alert.alert-danger {
-    background-color: #6b1f1f !important;  /* Red danger */
-    border: 1px solid #4f1515 !important;
+    background-color: #5a2b3b !important;  /* Pink danger */
+    border: 1px solid #46202e !important;
 }
 .status-alert .btn-close {
     filter: invert(1);

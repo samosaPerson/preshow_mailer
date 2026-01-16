@@ -27,8 +27,18 @@ def build_export_filename(show_title, start_time, provided=None):
 def generate_variants(theatre_config, show_info):
     """Fetch data once and render both standard and mailchimp HTML."""
     ctx = build_context(theatre_config, show_info)
-    html_mailchimp, text_body = render_email_from_context(ctx, include_mailchimp_footer=True)
-    html_standard, _ = render_email_from_context(ctx, include_mailchimp_footer=False)
+    html_mailchimp, text_body = render_email_from_context(
+        ctx,
+        include_mailchimp_footer=True,
+        embed_logo=False,
+        strip_dark_mode=False
+    )
+    html_standard, _ = render_email_from_context(
+        ctx,
+        include_mailchimp_footer=False,
+        embed_logo=True,
+        strip_dark_mode=True
+    )
     return {
         "mailchimp": html_mailchimp,
         "standard": html_standard,
